@@ -84,7 +84,7 @@ On the right is the number of batteries needed to get you through the winter to 
 
 **Note that batteries are somewhat worse than in vanilla at vanilla tilt**.
 
-Note that batteries per panel is tanking in part because the amount to store is tanking.:w
+Note that batteries per panel is tanking in part because the amount to store is tanking.
 
 ### Farming balance
 

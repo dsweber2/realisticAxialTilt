@@ -18,5 +18,6 @@
   <loadAfter>
     <li>brrainz.harmony</li>
   </loadAfter>
+  <url>https://github.com/dsweber2/realisticAxialTilt</url>
   <modLicense>CC BY 4.0</modLicense>
 </ModMetaData>
