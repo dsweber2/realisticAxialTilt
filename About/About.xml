@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+  <name>Realistic Axial Tilt</name>
+  <author>dsweber</author>
+  <packageId>dsweber.RealisticAxialTilt</packageId>
+  <description>Models realistic axial tilt: daylight duration and growing seasons vary by latitude and time of year.</description>
+  <supportedVersions>
+    <li>1.5</li>
+    <li>1.6</li>
+  </supportedVersions>
+  <modDependencies>
+    <li>
+      <packageId>brrainz.harmony</packageId>
+      <displayName>Harmony</displayName>
+      <steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
+    </li>
+  </modDependencies>
+  <loadAfter>
+    <li>brrainz.harmony</li>
+  </loadAfter>
+  <modLicense>CC BY 4.0</modLicense>
+</ModMetaData>

@@ -1,0 +1,7 @@
+<Project>
+  <PropertyGroup>
+    <RimWorldPath>/path/to/RimWorld</RimWorldPath>
+    <!-- e.g. /Abyssal/dsweber/steam/steamapps/workshop/content/294100 -->
+    <SteamWorkshopPath>/path/to/steamapps/workshop/content/294100</SteamWorkshopPath>
+  </PropertyGroup>
+</Project>

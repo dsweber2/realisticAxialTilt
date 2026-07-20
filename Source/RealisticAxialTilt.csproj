@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="GamePath.props" Condition="Exists('GamePath.props')" />
+
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <AssemblyName>RealisticAxialTilt</AssemblyName>
+    <LangVersion>9.0</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <OutputPath>../Assemblies</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(RimWorldPath)' == ''">
+    <RimWorldPath>RIMWORLD_PATH_NOT_SET — copy GamePath.props.example to GamePath.props and fill it in</RimWorldPath>
+  </PropertyGroup>
+
+  <!-- Harmony ships as a Steam Workshop mod (839005762), not in Managed/ -->
+  <PropertyGroup>
+    <HarmonyPath>$(SteamWorkshopPath)/2009463077/Current/Assemblies/0Harmony.dll</HarmonyPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(RimWorldPath)/RimWorldLinux_Data/Managed/Assembly-CSharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(RimWorldPath)/RimWorldLinux_Data/Managed/UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>$(RimWorldPath)/RimWorldLinux_Data/Managed/UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>$(RimWorldPath)/RimWorldLinux_Data/Managed/UnityEngine.TextRenderingModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>$(HarmonyPath)</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+</Project>

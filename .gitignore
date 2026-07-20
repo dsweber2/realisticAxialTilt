@@ -1,0 +1,4 @@
+Source/GamePath.props
+Assemblies/*.dll
+Source/obj/
+Source/bin/

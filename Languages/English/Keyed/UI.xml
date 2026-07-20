@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <AxialTilt>Axial Tilt</AxialTilt>
+  <AxialTiltTip>How much the planet's axis tilts relative to its orbital plane. Increasing it increases the swinginess of seasonal temperatures at the poles while also increasing their average temperature. Earth-like is 23.45°. 90° is likely to be quite challenging!</AxialTiltTip>
+  <AxialTiltTicks>Earth-like:23.45,None:0,High:45,Extreme:90</AxialTiltTicks>
+  <SeasonalDamping>Axial effect</SeasonalDamping>
+  <SeasonalDampingTip>Decrease the effect of the axial tilt. Lower values compress the effect toward vanilla (k=0.0), while k=1.0 is realistic.</SeasonalDampingTip>
+  <TempRangeTableLabel>Annual Average temperature range (winter low / summer high):</TempRangeTableLabel>
+  <RAT_SettingsCategory>Realistic Axial Tilt</RAT_SettingsCategory>
+  <RAT_RealisticPlantRest>Realistic plant rest period</RAT_RealisticPlantRest>
+  <RAT_RealisticPlantRestDesc>Reduces the plant rest period from ~11 hours to 4 hours (22:00–02:00), allowing plants to grow during extended daylight at high latitudes. Recommended with non-Earth axial tilts.</RAT_RealisticPlantRestDesc>
+</LanguageData>
