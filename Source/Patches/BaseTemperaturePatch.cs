@@ -1,4 +1,5 @@
 using HarmonyLib;
+using RealisticAxialTilt.Compat;
 using RimWorld;
 using RimWorld.Planet;
 
@@ -10,6 +11,11 @@ namespace RealisticAxialTilt.Patches
         [HarmonyPrefix]
         private static void Prefix()
         {
+            if (RealisticPlanets2Compat.IsActive)
+            {
+                SolarGeometry.ApplyAxialTilt(RealisticPlanets2Compat.GetTiltDegrees(), 1.0f);
+                return;
+            }
             SolarGeometry.ApplyAxialTilt(
                 AxialTiltWorldComp.PendingAxialTiltDeg,
                 AxialTiltWorldComp.PendingK);
@@ -22,6 +28,7 @@ namespace RealisticAxialTilt.Patches
         [HarmonyPostfix]
         private static void Postfix(float lat, ref float __result)
         {
+            if (RealisticPlanets2Compat.IsActive) return;
             __result += SolarGeometry.AnnualTemperatureCorrection(lat);
         }
     }

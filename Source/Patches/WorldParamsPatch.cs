@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
+using RealisticAxialTilt.Compat;
 using RimWorld;
 using RimWorld.Planet;
 using UnityEngine;
@@ -153,6 +154,7 @@ namespace RealisticAxialTilt.Patches
         [HarmonyPostfix]
         static void DrawSlider(Page_CreateWorldParams __instance, Rect rect)
         {
+            if (RealisticPlanets2Compat.IsActive) return;
             Rect mainRect = (Rect)GetMainRect.Invoke(__instance, new object[] { rect, 0f, false });
             float colWidth = (mainRect.width - 18f) * 0.5f;
             float sliderWidth = colWidth - 200f;

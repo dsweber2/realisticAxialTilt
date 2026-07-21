@@ -1,3 +1,4 @@
+using RealisticAxialTilt.Compat;
 using RimWorld.Planet;
 using Verse;
 
@@ -25,6 +26,11 @@ namespace RealisticAxialTilt
         public override void FinalizeInit(bool fromLoad)
         {
             base.FinalizeInit(fromLoad);
+            if (RealisticPlanets2Compat.IsActive)
+            {
+                SolarGeometry.ApplyAxialTilt(RealisticPlanets2Compat.GetTiltDegrees(), 1.0f);
+                return;
+            }
             if (!fromLoad)
             {
                 axialTiltDeg = PendingAxialTiltDeg;
