@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
@@ -29,6 +31,11 @@ namespace RealisticAxialTilt.Patches
         private const float TickLabelH = 16f;
         private const float TickAreaH = TickLineH + TickLabelH;
 
+        // Captured by the transpiler just before vanilla's EndGroup — holds the final
+        // value of num2 (the running y-offset) after all mods have added their rows.
+        private static float _lastRowBottom = 5 * 40f; // fallback: Population row
+
+
         private static List<(string Label, float Value)> _cachedTicks;
 
         private static List<(string Label, float Value)> GetTicks()
@@ -47,6 +54,99 @@ namespace RealisticAxialTilt.Patches
             return _cachedTicks;
         }
 
+        // Runs after all other transpilers (Priority.Last = 100) so num2 already
+        // includes any rows injected by third-party mods (e.g. Geological Landforms).
+        [HarmonyPatch(nameof(Page_CreateWorldParams.DoWindowContents))]
+        [HarmonyTranspiler]
+        [HarmonyPriority(Priority.Last)]
+        static IEnumerable<CodeInstruction> CaptureRowBottom(IEnumerable<CodeInstruction> instructions)
+        {
+            var list = instructions.ToList();
+            var endGroup     = AccessTools.Method(typeof(Widgets), nameof(Widgets.EndGroup));
+            var lastRowField = AccessTools.Field(typeof(WorldParamsPatch), nameof(_lastRowBottom));
+
+            int num2Idx = FindNum2Local(list);
+            for (int ii = 0; ii < list.Count; ii++)
+            {
+                if (list[ii].Calls(endGroup))
+                {
+                    if (num2Idx >= 0)
+                    {
+                        // Transfer labels so any branch targeting EndGroup still lands here.
+                        var ldloc = MakeLdloc(list, num2Idx);
+                        ldloc.labels.AddRange(list[ii].labels);
+                        list[ii].labels.Clear();
+                        list.Insert(ii, new CodeInstruction(OpCodes.Stsfld, lastRowField));
+                        list.Insert(ii, ldloc);
+                    }
+                    break;
+                }
+            }
+            return list;
+        }
+
+        // Finds the local variable index for num2 by looking for the first
+        // `ldloc X; ldc.r4 40f; add; stloc X` pattern (a row-height increment).
+        private static int FindNum2Local(List<CodeInstruction> list)
+        {
+            for (int ii = 0; ii + 3 < list.Count; ii++)
+            {
+                if (!IsLdloc(list[ii])) continue;
+                if (list[ii + 1].opcode != OpCodes.Ldc_R4 || (float)list[ii + 1].operand != 40f) continue;
+                if (list[ii + 2].opcode != OpCodes.Add) continue;
+                if (!IsStloc(list[ii + 3])) continue;
+                int loadIdx  = LocalIndex(list[ii]);
+                int storeIdx = LocalIndex(list[ii + 3]);
+                if (loadIdx == storeIdx && loadIdx >= 0)
+                    return loadIdx;
+            }
+            Log.Warning("[RealisticAxialTilt] CaptureRowBottom: could not locate row-position local; falling back to hardcoded offset.");
+            return -1;
+        }
+
+        private static int LocalIndex(CodeInstruction ci)
+        {
+            if (ci.opcode == OpCodes.Ldloc_0 || ci.opcode == OpCodes.Stloc_0) return 0;
+            if (ci.opcode == OpCodes.Ldloc_1 || ci.opcode == OpCodes.Stloc_1) return 1;
+            if (ci.opcode == OpCodes.Ldloc_2 || ci.opcode == OpCodes.Stloc_2) return 2;
+            if (ci.opcode == OpCodes.Ldloc_3 || ci.opcode == OpCodes.Stloc_3) return 3;
+            return ci.operand switch
+            {
+                LocalBuilder lb => lb.LocalIndex,
+                int n           => n,
+                byte b          => b,
+                _               => -1
+            };
+        }
+
+        private static bool IsStloc(CodeInstruction ci) =>
+            ci.opcode == OpCodes.Stloc   || ci.opcode == OpCodes.Stloc_S  ||
+            ci.opcode == OpCodes.Stloc_0 || ci.opcode == OpCodes.Stloc_1  ||
+            ci.opcode == OpCodes.Stloc_2 || ci.opcode == OpCodes.Stloc_3;
+
+        private static bool IsLdloc(CodeInstruction ci) =>
+            ci.opcode == OpCodes.Ldloc   || ci.opcode == OpCodes.Ldloc_S  ||
+            ci.opcode == OpCodes.Ldloc_0 || ci.opcode == OpCodes.Ldloc_1  ||
+            ci.opcode == OpCodes.Ldloc_2 || ci.opcode == OpCodes.Ldloc_3;
+
+        // Clones an existing ldloc instruction for the given local so the opcode
+        // and operand type exactly match what the IL already uses for that slot.
+        private static CodeInstruction MakeLdloc(List<CodeInstruction> list, int index)
+        {
+            foreach (var ci in list)
+                if (IsLdloc(ci) && LocalIndex(ci) == index)
+                    return new CodeInstruction(ci.opcode, ci.operand);
+            return index switch
+            {
+                0 => new CodeInstruction(OpCodes.Ldloc_0),
+                1 => new CodeInstruction(OpCodes.Ldloc_1),
+                2 => new CodeInstruction(OpCodes.Ldloc_2),
+                3 => new CodeInstruction(OpCodes.Ldloc_3),
+                _ when index <= 255 => new CodeInstruction(OpCodes.Ldloc_S, (byte)index),
+                _ => new CodeInstruction(OpCodes.Ldloc, index)
+            };
+        }
+
         [HarmonyPatch(nameof(Page_CreateWorldParams.DoWindowContents))]
         [HarmonyPostfix]
         static void DrawSlider(Page_CreateWorldParams __instance, Rect rect)
@@ -55,11 +155,7 @@ namespace RealisticAxialTilt.Patches
             float colWidth = (mainRect.width - 18f) * 0.5f;
             float sliderWidth = colWidth - 200f;
 
-            int rows = 6;
-            if (ModsConfig.OdysseyActive) rows++;
-            if (ModsConfig.BiotechActive) rows++;
-            if (!TutorSystem.TutorialMode) rows++;
-            float yPos = rows * 40f + 40f;
+            float yPos = _lastRowBottom + 40f;
 
             Widgets.BeginGroup(new Rect(mainRect.x, mainRect.y, colWidth, mainRect.height));
 

@@ -128,5 +128,5 @@ The in-game UI shows an estimated temperature range (winter low / summer high) a
 
 - potential future mod: custom biome definitions tuned for non-Earth tilts (e.g. polar deserts, equatorial tundra)
 - potential future mod: adjust plant growth estimates and give yield/year estimates
-- potential future mod: make animals skedaddle ofhot maps
+- potential future mod: make animals skedaddle off of hot maps
 - temperature: caching optimisation (trig calls could be done once per map instead of per-tick)
