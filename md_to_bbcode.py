@@ -5,16 +5,16 @@ import re
 import sys
 
 IMAGE_URLS = {
-    "images/world_0.png":          "https://images.steamusercontent.com/ugc/10245062622179365909/2CB8DCE7455FFC4F010A141AB47FC776DABBD9D3/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
-    "images/world_23.png":         "https://images.steamusercontent.com/ugc/16739171866728015075/1FAB87DACD9D5414EA52969FA6DEB98DF8DBE1C5/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
-    "images/world_60.png":         "https://images.steamusercontent.com/ugc/10332520504072083539/B7B44786B6917501782995BBE9A96B1C2BDE3BF5/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
-    "images/world_90.png":         "https://images.steamusercontent.com/ugc/10759519767003038994/F41A704DF523EF5253E956B57046AD3A43BA26BC/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
+    "images/world_0.png": "https://images.steamusercontent.com/ugc/10245062622179365909/2CB8DCE7455FFC4F010A141AB47FC776DABBD9D3/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
+    "images/world_23.png": "https://images.steamusercontent.com/ugc/16739171866728015075/1FAB87DACD9D5414EA52969FA6DEB98DF8DBE1C5/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
+    "images/world_60.png": "https://images.steamusercontent.com/ugc/10332520504072083539/B7B44786B6917501782995BBE9A96B1C2BDE3BF5/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
+    "images/world_90.png": "https://images.steamusercontent.com/ugc/10759519767003038994/F41A704DF523EF5253E956B57046AD3A43BA26BC/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
     "analysis/steam_averages.png": "https://images.steamusercontent.com/ugc/17110755943928957812/9CAE67F8C6A324B544C0C3D967EB77436FDCA65B/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
     "analysis/steam_seasonal.png": "https://images.steamusercontent.com/ugc/14592588807158398538/E131B55937B8CE100C177BCADAE38E7D7A331D93/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
-    "images/steam_ui.png":         "https://images.steamusercontent.com/ugc/17117745568679409044/42B1731A5A15F8FF2508654E7D4AF0D7C2579339/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
+    "images/steam_ui.png": "https://images.steamusercontent.com/ugc/17117745568679409044/42B1731A5A15F8FF2508654E7D4AF0D7C2579339/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true",
 }
 
-SKIP_HEADINGS = {"Copyright", "Code generation"}
+SKIP_HEADINGS = {}
 
 
 def convert(text):
@@ -45,7 +45,11 @@ def convert(text):
             # Skip unwanted sections entirely
             if heading in SKIP_HEADINGS:
                 ii += 1
-                while ii < len(lines) and not re.match(r"^#+\s", lines[ii]) and not re.match(r"^---+$", lines[ii].strip()):
+                while (
+                    ii < len(lines)
+                    and not re.match(r"^#+\s", lines[ii])
+                    and not re.match(r"^---+$", lines[ii].strip())
+                ):
                     ii += 1
                 continue
 
@@ -98,7 +102,7 @@ def convert(text):
     result = "\n".join(out).strip()
     # Drop a leading hr from the separator after the skipped title
     if result.startswith("[hr][/hr]"):
-        result = result[len("[hr][/hr]"):].lstrip("\n")
+        result = result[len("[hr][/hr]") :].lstrip("\n")
     # Collapse consecutive hrs (left by skipped sections)
     result = re.sub(r"(\[hr\]\[/hr\]\n*){2,}", "[hr][/hr]\n\n", result)
     return result
@@ -110,6 +114,7 @@ def inline(text):
         src = m.group(2)
         url = IMAGE_URLS.get(src, src)
         return f"[img]{url}[/img]"
+
     text = re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", replace_image, text)
 
     # Links
@@ -117,8 +122,8 @@ def inline(text):
 
     # Bold + italic (order matters: *** before ** before *)
     text = re.sub(r"\*\*\*(.+?)\*\*\*", r"[b][i]\1[/i][/b]", text)
-    text = re.sub(r"\*\*(.+?)\*\*",     r"[b]\1[/b]",         text)
-    text = re.sub(r"\*(.+?)\*",         r"[i]\1[/i]",         text)
+    text = re.sub(r"\*\*(.+?)\*\*", r"[b]\1[/b]", text)
+    text = re.sub(r"\*(.+?)\*", r"[i]\1[/i]", text)
 
     return text
 

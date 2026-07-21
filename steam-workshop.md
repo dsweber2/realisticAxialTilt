@@ -69,6 +69,6 @@ This mod is specifically meant for just direct effects of the axial tilt. I may 
 This is Creative Commons. Feel free to use it however you want, as long as you attribute me. I'm happy to adapt to integrate with other mods if it makes sense or help you do that. You cannot copyright ideas, algorithms, or math, just code.
 ---
 ### Code generation
-I used Claude code in the process of making this package. If you know what you're doing code generation can be quite useful. 
+I used Claude code in the process of making this package.
 ---
 *Source code: [GitHub](https://github.com/dsweber2/realisticAxialTilt)*

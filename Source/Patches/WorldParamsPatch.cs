@@ -34,6 +34,8 @@ namespace RealisticAxialTilt.Patches
         // Captured by the transpiler just before vanilla's EndGroup — holds the final
         // value of num2 (the running y-offset) after all mods have added their rows.
         private static float _lastRowBottom = 5 * 40f; // fallback: Population row
+        private static Vector2 _scrollPosition;
+        private const float ScrollBarW = 16f;
 
 
         private static List<(string Label, float Value)> _cachedTicks;
@@ -156,18 +158,29 @@ namespace RealisticAxialTilt.Patches
             float sliderWidth = colWidth - 200f;
 
             float yPos = _lastRowBottom + 40f;
+            float availH = mainRect.height - yPos;
+
+            // 76f accounts for slider (30), gap (10), damping (30), gap (6); then 3 label rows.
+            float ratContentH = 76f + TickAreaH + 3f * RowH;
+            bool needsScroll = ratContentH > availH && availH > 0f;
+            float innerSliderW = needsScroll ? sliderWidth - ScrollBarW : sliderWidth;
 
             Widgets.BeginGroup(new Rect(mainRect.x, mainRect.y, colWidth, mainRect.height));
+
+            Rect outRect = new Rect(0f, yPos, colWidth, Mathf.Max(availH, 0f));
+            Rect viewRect = new Rect(0f, 0f, colWidth - (needsScroll ? ScrollBarW : 0f), ratContentH);
+            Widgets.BeginScrollView(outRect, ref _scrollPosition, viewRect);
 
             float pending = AxialTiltWorldComp.PendingAxialTiltDeg;
             string tiltLabel = Mathf.Abs(pending - EarthTilt) < 0.01f
                 ? pending.ToString("F2") + "° (Vanilla)"
                 : pending.ToString("F1") + "°";
 
-            Rect tiltRow = new Rect(0f, yPos, 200f + sliderWidth, 30f);
-            Widgets.Label(new Rect(0f, yPos, 200f, 30f), "AxialTilt".Translate());
+            float sy = 0f;
+            Rect tiltRow = new Rect(0f, sy, 200f + innerSliderW, 30f);
+            Widgets.Label(new Rect(0f, sy, 200f, 30f), "AxialTilt".Translate());
             float rawTilt = Widgets.HorizontalSlider(
-                new Rect(200f, yPos, sliderWidth, 30f),
+                new Rect(200f, sy, innerSliderW, 30f),
                 pending, 0f, 90f,
                 middleAlignment: true,
                 tiltLabel, null, null);
@@ -183,13 +196,13 @@ namespace RealisticAxialTilt.Patches
             AxialTiltWorldComp.PendingAxialTiltDeg = snapped;
             TooltipHandler.TipRegion(tiltRow, "AxialTiltTip".Translate());
 
-            DrawTicks(yPos + 30f, 200f, sliderWidth);
+            DrawTicks(sy + 30f, 200f, innerSliderW);
 
-            float dampingY = yPos + 40f + TickAreaH;
-            Rect dampingRow = new Rect(0f, dampingY, 200f + sliderWidth, 30f);
+            float dampingY = sy + 40f + TickAreaH;
+            Rect dampingRow = new Rect(0f, dampingY, 200f + innerSliderW, 30f);
             Widgets.Label(new Rect(0f, dampingY, 200f, 30f), "SeasonalDamping".Translate());
             AxialTiltWorldComp.PendingK = Widgets.HorizontalSlider(
-                new Rect(200f, dampingY, sliderWidth, 30f),
+                new Rect(200f, dampingY, innerSliderW, 30f),
                 AxialTiltWorldComp.PendingK,
                 0f, 1f,
                 middleAlignment: true,
@@ -203,8 +216,8 @@ namespace RealisticAxialTilt.Patches
             float tilt = AxialTiltWorldComp.PendingAxialTiltDeg;
             float k    = AxialTiltWorldComp.PendingK;
 
-            float tableY = yPos + 76f + TickAreaH;
-            float rowW   = 200f + sliderWidth;
+            float tableY = sy + 76f + TickAreaH;
+            float rowW   = 200f + innerSliderW;
             float cellW  = rowW / ColHeaders.Length;
 
             Widgets.Label(new Rect(0f, tableY, rowW, RowH), "TempRangeTableLabel".Translate());
@@ -226,6 +239,7 @@ namespace RealisticAxialTilt.Patches
                 Widgets.Label(new Rect(ii * cellW, tableY, cellW, RowH), rangeStr);
             }
 
+            Widgets.EndScrollView();
             Widgets.EndGroup();
         }
 
