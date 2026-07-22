@@ -169,7 +169,7 @@ namespace RealisticAxialTilt.Patches
 
             Widgets.BeginGroup(new Rect(mainRect.x, mainRect.y, colWidth, mainRect.height));
 
-            Rect outRect = new Rect(0f, yPos, colWidth, Mathf.Max(availH, 0f));
+            Rect outRect = new Rect(0f, yPos, colWidth, Mathf.Max(Mathf.Min(availH, ratContentH), 0f));
             Rect viewRect = new Rect(0f, 0f, colWidth - (needsScroll ? ScrollBarW : 0f), ratContentH);
             Widgets.BeginScrollView(outRect, ref _scrollPosition, viewRect);
 

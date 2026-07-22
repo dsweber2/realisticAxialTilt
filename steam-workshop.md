@@ -8,7 +8,7 @@ This mod makes axial tilt have a realistic effect.
 - **Seasonal temperature** swings scale with tilt. A 90° world at 60° latitude swings from scorching summers to brutal winters.
 - **Solstice/Equinox timing** in Vanilla, the peak seasonal daylight (Septober 1) is *after* the peak temperature (Jugust 7). This is silly. Solstice is now on Jugust/Decembary 1st, with the temperature peak 7 days later
 - **Biome placement** is reshaped by the shift in annual average temperatures.
-- **Plant growth** adapts to extended daylight (the plants still need 4 hours of rest though, just not the 12 of vanilla).
+- **Plant growth** togglable, adapts to extended daylight (the plants still need 4 hours of rest though, just not the 12 of vanilla).
 - **Solar panel output** and **shadow direction** use the corrected sun position. Expect higher highs and lower lows
 ---
 ### At 0° tilt — no seasons
@@ -69,6 +69,6 @@ This mod is specifically meant for just direct effects of the axial tilt. I may 
 This is Creative Commons. Feel free to use it however you want, as long as you attribute me. I'm happy to adapt to integrate with other mods if it makes sense or help you do that. You cannot copyright ideas, algorithms, or math, just code.
 ---
 ### Code generation
-I used Claude code in the process of making this package.
+I used Claude code in the process of making this package. Keep thinking.
 ---
 *Source code: [GitHub](https://github.com/dsweber2/realisticAxialTilt)*
