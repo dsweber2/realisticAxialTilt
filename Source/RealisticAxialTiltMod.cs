@@ -1,4 +1,5 @@
 using HarmonyLib;
+using RealisticAxialTilt.Compat;
 using UnityEngine;
 using Verse;
 
@@ -11,7 +12,10 @@ namespace RealisticAxialTilt
         public RealisticAxialTiltMod(ModContentPack content) : base(content)
         {
             Settings = GetSettings<RealisticAxialTiltSettings>();
-            new Harmony("dsweber.RealisticAxialTilt").PatchAll();
+            var harmony = new Harmony("dsweber.RealisticAxialTilt");
+            harmony.PatchAll();
+            NicePlantsMenuCompat.TryPatch(harmony);
+            FactionControlCompat.TryPatch(harmony);
         }
 
         public override void DoSettingsWindowContents(Rect inRect)

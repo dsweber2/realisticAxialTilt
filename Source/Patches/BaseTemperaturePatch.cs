@@ -32,4 +32,18 @@ namespace RealisticAxialTilt.Patches
             __result += SolarGeometry.AnnualTemperatureCorrection(lat);
         }
     }
+
+    // Fires after RP2's GenerateFresh prefix (which returns false, replacing the method,
+    // but Harmony still runs postfixes). Applies RAT's axial-tilt correction to RP2's
+    // precomputed climate arrays and tile temperatures.
+    [HarmonyPatch(typeof(WorldGenStep_Terrain), "GenerateFresh")]
+    internal static class RP2AnnualTempCorrectionPatch
+    {
+        [HarmonyPostfix]
+        private static void Postfix()
+        {
+            if (!RealisticPlanets2Compat.IsActive) return;
+            RealisticPlanets2Compat.ApplyAnnualTempCorrection();
+        }
+    }
 }

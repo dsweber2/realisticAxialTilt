@@ -31,13 +31,13 @@ namespace RealisticAxialTilt.Patches
         private const float TickLineH = 6f;
         private const float TickLabelH = 16f;
         private const float TickAreaH = TickLineH + TickLabelH;
+        private const float ScrollBarW = 17f;
 
-        // Captured by the transpiler just before vanilla's EndGroup — holds the final
-        // value of num2 (the running y-offset) after all mods have added their rows.
-        private static float _lastRowBottom = 5 * 40f; // fallback: Population row
+        // Updated every frame by DrawRATAndEndScroll; used by BeginColumnScrollView
+        // the following frame to size the scroll view's viewRect correctly.
+        private static float _lastRowBottom = 0f;
+        private static float _capturedColWidth;
         private static Vector2 _scrollPosition;
-        private const float ScrollBarW = 16f;
-
 
         private static List<(string Label, float Value)> _cachedTicks;
 
@@ -57,192 +57,185 @@ namespace RealisticAxialTilt.Patches
             return _cachedTicks;
         }
 
-        // Runs after all other transpilers (Priority.Last = 100) so num2 already
-        // includes any rows injected by third-party mods (e.g. Geological Landforms).
-        [HarmonyPatch(nameof(Page_CreateWorldParams.DoWindowContents))]
-        [HarmonyTranspiler]
-        [HarmonyPriority(Priority.Last)]
-        static IEnumerable<CodeInstruction> CaptureRowBottom(IEnumerable<CodeInstruction> instructions)
+        // Called by the transpiler in place of Widgets.BeginGroup(rect2).
+        // Wraps the entire left column (vanilla rows + mod rows) in a scroll view.
+        // The outRect is extended ScrollBarW pixels to the right so the vertical scrollbar
+        // sits in the ~18px gap between columns rather than overlapping column content.
+        private static void BeginColumnScrollView(Rect colRect)
         {
-            var list = instructions.ToList();
-            var endGroup     = AccessTools.Method(typeof(Widgets), nameof(Widgets.EndGroup));
-            var lastRowField = AccessTools.Field(typeof(WorldParamsPatch), nameof(_lastRowBottom));
-
-            int num2Idx = FindNum2Local(list);
-            for (int ii = 0; ii < list.Count; ii++)
-            {
-                if (list[ii].Calls(endGroup))
-                {
-                    if (num2Idx >= 0)
-                    {
-                        // Transfer labels so any branch targeting EndGroup still lands here.
-                        var ldloc = MakeLdloc(list, num2Idx);
-                        ldloc.labels.AddRange(list[ii].labels);
-                        list[ii].labels.Clear();
-                        list.Insert(ii, new CodeInstruction(OpCodes.Stsfld, lastRowField));
-                        list.Insert(ii, ldloc);
-                    }
-                    break;
-                }
-            }
-            return list;
-        }
-
-        // Finds the local variable index for num2 by looking for the first
-        // `ldloc X; ldc.r4 40f; add; stloc X` pattern (a row-height increment).
-        private static int FindNum2Local(List<CodeInstruction> list)
-        {
-            for (int ii = 0; ii + 3 < list.Count; ii++)
-            {
-                if (!IsLdloc(list[ii])) continue;
-                if (list[ii + 1].opcode != OpCodes.Ldc_R4 || (float)list[ii + 1].operand != 40f) continue;
-                if (list[ii + 2].opcode != OpCodes.Add) continue;
-                if (!IsStloc(list[ii + 3])) continue;
-                int loadIdx  = LocalIndex(list[ii]);
-                int storeIdx = LocalIndex(list[ii + 3]);
-                if (loadIdx == storeIdx && loadIdx >= 0)
-                    return loadIdx;
-            }
-            Log.Warning("[RealisticAxialTilt] CaptureRowBottom: could not locate row-position local; falling back to hardcoded offset.");
-            return -1;
-        }
-
-        private static int LocalIndex(CodeInstruction ci)
-        {
-            if (ci.opcode == OpCodes.Ldloc_0 || ci.opcode == OpCodes.Stloc_0) return 0;
-            if (ci.opcode == OpCodes.Ldloc_1 || ci.opcode == OpCodes.Stloc_1) return 1;
-            if (ci.opcode == OpCodes.Ldloc_2 || ci.opcode == OpCodes.Stloc_2) return 2;
-            if (ci.opcode == OpCodes.Ldloc_3 || ci.opcode == OpCodes.Stloc_3) return 3;
-            return ci.operand switch
-            {
-                LocalBuilder lb => lb.LocalIndex,
-                int n           => n,
-                byte b          => b,
-                _               => -1
-            };
-        }
-
-        private static bool IsStloc(CodeInstruction ci) =>
-            ci.opcode == OpCodes.Stloc   || ci.opcode == OpCodes.Stloc_S  ||
-            ci.opcode == OpCodes.Stloc_0 || ci.opcode == OpCodes.Stloc_1  ||
-            ci.opcode == OpCodes.Stloc_2 || ci.opcode == OpCodes.Stloc_3;
-
-        private static bool IsLdloc(CodeInstruction ci) =>
-            ci.opcode == OpCodes.Ldloc   || ci.opcode == OpCodes.Ldloc_S  ||
-            ci.opcode == OpCodes.Ldloc_0 || ci.opcode == OpCodes.Ldloc_1  ||
-            ci.opcode == OpCodes.Ldloc_2 || ci.opcode == OpCodes.Ldloc_3;
-
-        // Clones an existing ldloc instruction for the given local so the opcode
-        // and operand type exactly match what the IL already uses for that slot.
-        private static CodeInstruction MakeLdloc(List<CodeInstruction> list, int index)
-        {
-            foreach (var ci in list)
-                if (IsLdloc(ci) && LocalIndex(ci) == index)
-                    return new CodeInstruction(ci.opcode, ci.operand);
-            return index switch
-            {
-                0 => new CodeInstruction(OpCodes.Ldloc_0),
-                1 => new CodeInstruction(OpCodes.Ldloc_1),
-                2 => new CodeInstruction(OpCodes.Ldloc_2),
-                3 => new CodeInstruction(OpCodes.Ldloc_3),
-                _ when index <= 255 => new CodeInstruction(OpCodes.Ldloc_S, (byte)index),
-                _ => new CodeInstruction(OpCodes.Ldloc, index)
-            };
-        }
-
-        [HarmonyPatch(nameof(Page_CreateWorldParams.DoWindowContents))]
-        [HarmonyPostfix]
-        static void DrawSlider(Page_CreateWorldParams __instance, Rect rect)
-        {
-            if (RealisticPlanets2Compat.IsActive) return;
-            Rect mainRect = (Rect)GetMainRect.Invoke(__instance, new object[] { rect, 0f, false });
-            float colWidth = (mainRect.width - 18f) * 0.5f;
-            float sliderWidth = colWidth - 200f;
-
-            float yPos = _lastRowBottom + 40f;
-            float availH = mainRect.height - yPos;
-
-            // 76f accounts for slider (30), gap (10), damping (30), gap (6); then 3 label rows.
+            _capturedColWidth = colRect.width;
             float ratContentH = 76f + TickAreaH + 3f * RowH;
-            bool needsScroll = ratContentH > availH && availH > 0f;
-            float innerSliderW = needsScroll ? sliderWidth - ScrollBarW : sliderWidth;
-
-            Widgets.BeginGroup(new Rect(mainRect.x, mainRect.y, colWidth, mainRect.height));
-
-            Rect outRect = new Rect(0f, yPos, colWidth, Mathf.Max(Mathf.Min(availH, ratContentH), 0f));
-            Rect viewRect = new Rect(0f, 0f, colWidth - (needsScroll ? ScrollBarW : 0f), ratContentH);
+            if (Prefs.DevMode) ratContentH += 10f + 30 * 40f;
+            // Use previous frame's rowBottom for viewRect sizing.
+            // First frame: _lastRowBottom = 0, so contentH == colRect.height (no scroll yet, no overlap).
+            // +40f: num2 at EndGroup is the y-pos of the last row label, not past it.
+            float contentH = Mathf.Max(_lastRowBottom + 40f + ratContentH, colRect.height);
+            Rect outRect  = new Rect(colRect.x, colRect.y, colRect.width + ScrollBarW, colRect.height);
+            Rect viewRect = new Rect(0f, 0f, colRect.width, contentH);
             Widgets.BeginScrollView(outRect, ref _scrollPosition, viewRect);
+        }
 
-            float pending = AxialTiltWorldComp.PendingAxialTiltDeg;
-            string tiltLabel = Mathf.Abs(pending - EarthTilt) < 0.01f
-                ? pending.ToString("F2") + "° (Vanilla)"
-                : pending.ToString("F1") + "°";
+        // Called by the transpiler in place of Widgets.EndGroup().
+        // rowBottom is the live value of num2 from DoWindowContents — loaded directly
+        // from the IL so it reflects every mod's row additions regardless of priority.
+        private static void DrawRATAndEndScroll(Page_CreateWorldParams instance, float rowBottom)
+        {
+            _lastRowBottom = rowBottom;
 
-            float sy = 0f;
-            Rect tiltRow = new Rect(0f, sy, 200f + innerSliderW, 30f);
-            Widgets.Label(new Rect(0f, sy, 200f, 30f), "AxialTilt".Translate());
-            float rawTilt = Widgets.HorizontalSlider(
-                new Rect(200f, sy, innerSliderW, 30f),
-                pending, 0f, 90f,
-                middleAlignment: true,
-                tiltLabel, null, null);
-            float snapped = Mathf.Round(rawTilt * 2f) / 2f;
-            foreach ((string _, float tickVal) in GetTicks())
+            if (!RealisticPlanets2Compat.IsActive)
             {
-                if (Mathf.Abs(rawTilt - tickVal) < StickyRadius)
+                float innerW = _capturedColWidth - 200f;
+                // +40f: num2 at EndGroup is the y-pos of the last row label, not past it.
+                float sy = rowBottom + 40f;
+
+                float pending = AxialTiltWorldComp.PendingAxialTiltDeg;
+                string tiltLabel = Mathf.Abs(pending - EarthTilt) < 0.01f
+                    ? pending.ToString("F2") + "° (Vanilla)"
+                    : pending.ToString("F1") + "°";
+
+                Rect tiltRow = new Rect(0f, sy, 200f + innerW, 30f);
+                Widgets.Label(new Rect(0f, sy, 200f, 30f), "AxialTilt".Translate());
+                float rawTilt = Widgets.HorizontalSlider(
+                    new Rect(200f, sy, innerW, 30f),
+                    pending, 0f, 90f,
+                    middleAlignment: true,
+                    tiltLabel, null, null);
+                float snapped = Mathf.Round(rawTilt * 2f) / 2f;
+                foreach ((string _, float tickVal) in GetTicks())
                 {
-                    snapped = tickVal;
-                    break;
+                    if (Mathf.Abs(rawTilt - tickVal) < StickyRadius)
+                    {
+                        snapped = tickVal;
+                        break;
+                    }
                 }
-            }
-            AxialTiltWorldComp.PendingAxialTiltDeg = snapped;
-            TooltipHandler.TipRegion(tiltRow, "AxialTiltTip".Translate());
+                AxialTiltWorldComp.PendingAxialTiltDeg = snapped;
+                TooltipHandler.TipRegion(tiltRow, "AxialTiltTip".Translate());
 
-            DrawTicks(sy + 30f, 200f, innerSliderW);
+                DrawTicks(sy + 30f, 200f, innerW);
 
-            float dampingY = sy + 40f + TickAreaH;
-            Rect dampingRow = new Rect(0f, dampingY, 200f + innerSliderW, 30f);
-            Widgets.Label(new Rect(0f, dampingY, 200f, 30f), "SeasonalDamping".Translate());
-            AxialTiltWorldComp.PendingK = Widgets.HorizontalSlider(
-                new Rect(200f, dampingY, innerSliderW, 30f),
-                AxialTiltWorldComp.PendingK,
-                0f, 1f,
-                middleAlignment: true,
-                "k = " + AxialTiltWorldComp.PendingK.ToString("F2"),
-                null, null,
-                roundTo: 0.05f);
-            TooltipHandler.TipRegion(dampingRow, "SeasonalDampingTip".Translate());
+                float dampingY = sy + 40f + TickAreaH;
+                Rect dampingRow = new Rect(0f, dampingY, 200f + innerW, 30f);
+                Widgets.Label(new Rect(0f, dampingY, 200f, 30f), "SeasonalDamping".Translate());
+                AxialTiltWorldComp.PendingK = Widgets.HorizontalSlider(
+                    new Rect(200f, dampingY, innerW, 30f),
+                    AxialTiltWorldComp.PendingK,
+                    0f, 1f,
+                    middleAlignment: true,
+                    "k = " + AxialTiltWorldComp.PendingK.ToString("F2"),
+                    null, null,
+                    roundTo: 0.05f);
+                TooltipHandler.TipRegion(dampingRow, "SeasonalDampingTip".Translate());
 
-            var overallTemp = (OverallTemperature)TemperatureField.GetValue(__instance);
-            SimpleCurve tempCurve = overallTemp.GetTemperatureCurve();
-            float tilt = AxialTiltWorldComp.PendingAxialTiltDeg;
-            float k    = AxialTiltWorldComp.PendingK;
+                var overallTemp = (OverallTemperature)TemperatureField.GetValue(instance);
+                SimpleCurve tempCurve = overallTemp.GetTemperatureCurve();
+                float tilt = AxialTiltWorldComp.PendingAxialTiltDeg;
+                float k    = AxialTiltWorldComp.PendingK;
 
-            float tableY = sy + 76f + TickAreaH;
-            float rowW   = 200f + innerSliderW;
-            float cellW  = rowW / ColHeaders.Length;
+                float tableY = sy + 76f + TickAreaH;
+                float rowW   = 200f + innerW;
+                float cellW  = rowW / ColHeaders.Length;
 
-            Widgets.Label(new Rect(0f, tableY, rowW, RowH), "TempRangeTableLabel".Translate());
-            tableY += RowH;
+                Widgets.Label(new Rect(0f, tableY, rowW, RowH), "TempRangeTableLabel".Translate());
+                tableY += RowH;
 
-            for (int ii = 0; ii < ColHeaders.Length; ii++)
-                Widgets.Label(new Rect(ii * cellW, tableY, cellW, RowH), ColHeaders[ii]);
-            tableY += RowH;
+                for (int ii = 0; ii < ColHeaders.Length; ii++)
+                    Widgets.Label(new Rect(ii * cellW, tableY, cellW, RowH), ColHeaders[ii]);
+                tableY += RowH;
 
-            for (int ii = 0; ii < ColHeaders.Length; ii++)
-            {
-                (float tMin, float tMax) = SolarGeometry.ApproxTempRange(ColLats[ii], tilt, k);
-                if (tempCurve != null)
+                for (int ii = 0; ii < ColHeaders.Length; ii++)
                 {
-                    tMin = tempCurve.Evaluate(tMin);
-                    tMax = tempCurve.Evaluate(tMax);
+                    (float tMin, float tMax) = SolarGeometry.ApproxTempRange(ColLats[ii], tilt, k);
+                    if (tempCurve != null)
+                    {
+                        tMin = tempCurve.Evaluate(tMin);
+                        tMax = tempCurve.Evaluate(tMax);
+                    }
+                    string rangeStr = tMin.ToString("F0") + " / " + tMax.ToString("F0") + "°C";
+                    Widgets.Label(new Rect(ii * cellW, tableY, cellW, RowH), rangeStr);
                 }
-                string rangeStr = tMin.ToString("F0") + " / " + tMax.ToString("F0") + "°C";
-                Widgets.Label(new Rect(ii * cellW, tableY, cellW, RowH), rangeStr);
+
+                if (Prefs.DevMode)
+                {
+                    float devY = tableY + RowH + 10f;
+                    for (int ii = 0; ii < 30; ii++)
+                    {
+                        Widgets.Label(new Rect(0f, devY, 200f, 30f), $"[DEV] Nonsense {ii + 1}");
+                        Widgets.HorizontalSlider(new Rect(200f, devY, innerW, 30f), ii % 10, 0f, 10f,
+                            middleAlignment: true, (ii % 10).ToString(), null, null);
+                        devY += 40f;
+                    }
+                }
             }
 
             Widgets.EndScrollView();
-            Widgets.EndGroup();
+        }
+
+        // Draws the FactionControl button in the correct bottom-bar position (next to
+        // "Reset factions") instead of letting it draw at FactionControl's hardcoded y.
+        [HarmonyPatch(nameof(Page_CreateWorldParams.DoWindowContents))]
+        [HarmonyPostfix]
+        static void DrawFactionControlButton(Page_CreateWorldParams __instance, Rect rect)
+        {
+            if (!Compat.FactionControlCompat.IsActive) return;
+            Rect mainRect = (Rect)GetMainRect.Invoke(__instance, new object[] { rect, 0f, false });
+            Compat.FactionControlCompat.DrawBottomButton(rect, mainRect);
+        }
+
+        // Replaces vanilla's BeginGroup/EndGroup with scroll-view wrappers so every row
+        // in the left column — vanilla, mod-injected, and ours — scrolls as a single unit.
+        //
+        // Priority is set very low (1) so this transpiler sees the IL after all other mods
+        // have injected their rows. We then inject `ldloc num2` directly before our call,
+        // so DrawRATAndEndScroll receives the live runtime value of num2 regardless of which
+        // mods added rows or at what priority their transpilers ran.
+        [HarmonyPatch(nameof(Page_CreateWorldParams.DoWindowContents))]
+        [HarmonyTranspiler]
+        [HarmonyPriority(1)]
+        static IEnumerable<CodeInstruction> WrapLeftColumnInScroll(IEnumerable<CodeInstruction> instructions)
+        {
+            var list        = instructions.ToList();
+            var beginGroup  = AccessTools.Method(typeof(Widgets), nameof(Widgets.BeginGroup));
+            var endGroup    = AccessTools.Method(typeof(Widgets), nameof(Widgets.EndGroup));
+            var beginScroll = AccessTools.Method(typeof(WorldParamsPatch), nameof(BeginColumnScrollView));
+            var drawAndEnd  = AccessTools.Method(typeof(WorldParamsPatch), nameof(DrawRATAndEndScroll));
+
+            int num2Idx    = FindNum2Local(list);
+            bool foundBegin = false;
+
+            for (int ii = 0; ii < list.Count; ii++)
+            {
+                if (!foundBegin && list[ii].Calls(beginGroup))
+                {
+                    list[ii] = new CodeInstruction(OpCodes.Call, beginScroll).WithLabels(list[ii].labels);
+                    list[ii].labels.Clear();
+                    list[ii].labels.AddRange(instructions.ToList()[ii].labels); // preserve branch targets
+                    foundBegin = true;
+                }
+                else if (foundBegin && list[ii].Calls(endGroup))
+                {
+                    var endInstr = list[ii];
+                    // Replace EndGroup with DrawRATAndEndScroll(instance, rowBottom).
+                    list[ii] = new CodeInstruction(OpCodes.Call, drawAndEnd);
+
+                    // Push rowBottom (num2) — use live local if found, else 0f.
+                    if (num2Idx >= 0)
+                        list.Insert(ii, MakeLdloc(list, num2Idx));
+                    else
+                        list.Insert(ii, new CodeInstruction(OpCodes.Ldc_R4, 0f));
+
+                    // Push instance (this) — transfer labels from original EndGroup.
+                    var ldarg0 = new CodeInstruction(OpCodes.Ldarg_0);
+                    ldarg0.labels.AddRange(endInstr.labels);
+                    list.Insert(ii, ldarg0);
+                    break;
+                }
+            }
+
+            if (!foundBegin)
+                Log.Warning("[RealisticAxialTilt] WrapLeftColumnInScroll: BeginGroup not found; scroll not applied.");
+
+            return list;
         }
 
         private static void DrawTicks(float y, float sliderX, float sliderWidth)
@@ -279,6 +272,66 @@ namespace RealisticAxialTilt.Patches
         {
             AxialTiltWorldComp.PendingAxialTiltDeg = 23.45f;
             AxialTiltWorldComp.PendingK = 1.0f;
+        }
+
+        // Finds the local variable index for num2 by looking for the first
+        // `ldloc X; ldc.r4 40f; add; stloc X` pattern (a row-height increment).
+        private static int FindNum2Local(List<CodeInstruction> list)
+        {
+            for (int ii = 0; ii + 3 < list.Count; ii++)
+            {
+                if (!IsLdloc(list[ii])) continue;
+                if (list[ii + 1].opcode != OpCodes.Ldc_R4 || (float)list[ii + 1].operand != 40f) continue;
+                if (list[ii + 2].opcode != OpCodes.Add) continue;
+                if (!IsStloc(list[ii + 3])) continue;
+                int loadIdx  = LocalIndex(list[ii]);
+                int storeIdx = LocalIndex(list[ii + 3]);
+                if (loadIdx == storeIdx && loadIdx >= 0)
+                    return loadIdx;
+            }
+            Log.Warning("[RealisticAxialTilt] WrapLeftColumnInScroll: could not locate num2 local; using 0 as rowBottom fallback.");
+            return -1;
+        }
+
+        private static int LocalIndex(CodeInstruction ci)
+        {
+            if (ci.opcode == OpCodes.Ldloc_0 || ci.opcode == OpCodes.Stloc_0) return 0;
+            if (ci.opcode == OpCodes.Ldloc_1 || ci.opcode == OpCodes.Stloc_1) return 1;
+            if (ci.opcode == OpCodes.Ldloc_2 || ci.opcode == OpCodes.Stloc_2) return 2;
+            if (ci.opcode == OpCodes.Ldloc_3 || ci.opcode == OpCodes.Stloc_3) return 3;
+            return ci.operand switch
+            {
+                LocalBuilder lb => lb.LocalIndex,
+                int n           => n,
+                byte b          => b,
+                _               => -1
+            };
+        }
+
+        private static bool IsStloc(CodeInstruction ci) =>
+            ci.opcode == OpCodes.Stloc   || ci.opcode == OpCodes.Stloc_S  ||
+            ci.opcode == OpCodes.Stloc_0 || ci.opcode == OpCodes.Stloc_1  ||
+            ci.opcode == OpCodes.Stloc_2 || ci.opcode == OpCodes.Stloc_3;
+
+        private static bool IsLdloc(CodeInstruction ci) =>
+            ci.opcode == OpCodes.Ldloc   || ci.opcode == OpCodes.Ldloc_S  ||
+            ci.opcode == OpCodes.Ldloc_0 || ci.opcode == OpCodes.Ldloc_1  ||
+            ci.opcode == OpCodes.Ldloc_2 || ci.opcode == OpCodes.Ldloc_3;
+
+        private static CodeInstruction MakeLdloc(List<CodeInstruction> list, int index)
+        {
+            foreach (var ci in list)
+                if (IsLdloc(ci) && LocalIndex(ci) == index)
+                    return new CodeInstruction(ci.opcode, ci.operand);
+            return index switch
+            {
+                0 => new CodeInstruction(OpCodes.Ldloc_0),
+                1 => new CodeInstruction(OpCodes.Ldloc_1),
+                2 => new CodeInstruction(OpCodes.Ldloc_2),
+                3 => new CodeInstruction(OpCodes.Ldloc_3),
+                _ when index <= 255 => new CodeInstruction(OpCodes.Ldloc_S, (byte)index),
+                _ => new CodeInstruction(OpCodes.Ldloc, index)
+            };
         }
     }
 }
