@@ -116,7 +116,7 @@ namespace RealisticAxialTilt.Patches
                 float dampingY = sy + 40f + TickAreaH;
                 Rect dampingRow = new Rect(0f, dampingY, 200f + innerW, 30f);
                 Widgets.Label(new Rect(0f, dampingY, 200f, 30f), "SeasonalDamping".Translate());
-                AxialTiltWorldComp.PendingK = Widgets.HorizontalSlider(
+                float rawK = Widgets.HorizontalSlider(
                     new Rect(200f, dampingY, innerW, 30f),
                     AxialTiltWorldComp.PendingK,
                     0f, 1f,
@@ -124,6 +124,7 @@ namespace RealisticAxialTilt.Patches
                     "k = " + AxialTiltWorldComp.PendingK.ToString("F2"),
                     null, null,
                     roundTo: 0.05f);
+                AxialTiltWorldComp.PendingK = Mathf.Abs(rawK - 0.5f) < 0.05f ? 0.5f : rawK;
                 TooltipHandler.TipRegion(dampingRow, "SeasonalDampingTip".Translate());
 
                 var overallTemp = (OverallTemperature)TemperatureField.GetValue(instance);
@@ -294,7 +295,7 @@ namespace RealisticAxialTilt.Patches
         static void ResetTilt()
         {
             AxialTiltWorldComp.PendingAxialTiltDeg = 23.45f;
-            AxialTiltWorldComp.PendingK = 1.0f;
+            AxialTiltWorldComp.PendingK = 0.5f;
         }
 
         // Finds the local variable index for num2 by looking for the first

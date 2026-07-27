@@ -7,10 +7,10 @@ namespace RealisticAxialTilt
     public class AxialTiltWorldComp : WorldComponent
     {
         public static float PendingAxialTiltDeg = 23.45f;
-        public static float PendingK = 1.0f;
+        public static float PendingK = 0.5f;
 
         private float axialTiltDeg = 23.45f;
-        private float k = 1.0f;
+        private float k = 0.5f;
 
         public float AxialTiltDeg => axialTiltDeg;
 
@@ -20,7 +20,7 @@ namespace RealisticAxialTilt
         {
             base.ExposeData();
             Scribe_Values.Look(ref axialTiltDeg, "axialTiltDeg", 23.45f);
-            Scribe_Values.Look(ref k, "dampingK", 1.0f);
+            Scribe_Values.Look(ref k, "dampingK", 0.5f);
         }
 
         public override void FinalizeInit(bool fromLoad)
