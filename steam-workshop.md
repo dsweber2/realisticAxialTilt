@@ -9,7 +9,8 @@ This mod makes axial tilt have a realistic effect.
 - **Solstice/Equinox timing** in Vanilla, the peak seasonal daylight (Septober 1) is *after* the peak temperature (Jugust 7). This is silly. Solstice is now on Jugust/Decembary 1st, with the temperature peak 7 days later
 - **Biome placement** is reshaped by the shift in annual average temperatures.
 - **Plant growth** togglable, adapts to extended daylight (the plants still need 4 hours of rest though, just not the 12 of vanilla).
-- **Solar panel output** and **shadow direction** use the corrected sun position. Expect higher highs and lower lows
+- **Solar panel output** uses the corrected sun position. Expect higher highs and lower lows.
+- **Shadow direction** is latitude- and season-aware. Vanilla doesn't draw northern building shadows, which this adds.
 ---
 ### At 0° tilt — no seasons
 ![steam_averages](images/world_0.png)
@@ -57,8 +58,15 @@ Useful if you want the visual effect of a crazy tilt without the gameplay conseq
 ---
 ## Compatibility
 - Works with existing saves, should be safe to remove (haven't tried that yet).
-- Should be compatible with most biome mods — it changes selection, not the biomes selected. 
+- Should be compatible with most biome mods — it changes selection, not the biomes selected.
 - Not compatible with mods that patch sun positioning, map glow, or temperature as a function of latitude. It should be fine with mods that adjust visual lightness such as moon-glow.
+
+Explicit patches included for:
+- [Realistic Planets 2](https://steamcommunity.com/sharedfiles/filedetails/?id=3244790542) — corrects RP2's climate arrays for non-Earth tilts. Untested, may have unreasonble extremes
+- Generation menu: [Configurable Maps](https://steamcommunity.com/sharedfiles/filedetails/?id=2345292146), [Faction Control](https://steamcommunity.com/sharedfiles/filedetails/?id=2590478270), [RimWar](https://steamcommunity.com/sharedfiles/filedetails/?id=1399616068)
+- [Nice Plants Menu](https://steamcommunity.com/sharedfiles/filedetails/?id=2877856030) adjust growth calculations
+- **Not yet patched:** Tilt the Planet — directly conflicts with sun positioning; avoid using both at once.
+
 ---
 ## Plans
 This mod is specifically meant for just direct effects of the axial tilt. I may make some follow up mods or add adjustments directly related to solar light levels. Some ideas for related mods:

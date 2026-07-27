@@ -18,6 +18,12 @@ A 0° tilt gives equal days everywhere; 90° gives midnight sun and polar night 
 **The sun follows a physically correct annual path.**
 [Solar declination](https://en.wikipedia.org/wiki/Position_of_the_Sun#Calculations) is computed as `arcsin(sin(ε) × sin(2π×day/60))`, where ε is the axial tilt.
 
+**Shadow direction is latitude- and season-aware.**
+Vanilla always casts shadows toward the south regardless of hemisphere or season.
+This mod computes the sun's actual horizontal bearing from the tile's latitude and time of year, so shadows point north at high-latitude summer noon, sweep east in the morning and west in the evening, and get very short near the equator at equinox.
+Shadow length also fades in from the horizon to prevent absurdly long shadows at near-horizontal sun angles.
+Vanilla's building shadow geometry only included west, east, and south-facing edges; a north-facing edge has been added so buildings cast correct shadows when the sun is in the south.
+
 **Seasons are astronomically aligned with the quadrums.**
 
 | Day | Event |
@@ -39,6 +45,11 @@ The seasonal amplitude at each latitude is scaled to match the ratio of annual i
 At high tilts the poles warm and the equator cools slightly, reshaping biome placement — at 90° there are no polar ice caps; deserts and arid biomes appear instead.
 The correction uses the 6th-degree Legendre series approximation to annual mean insolation from [Nadeau & McGehee (2017), *Icarus* 291:46–50](https://arxiv.org/abs/1810.10081), with the underlying insolation formula from [Ward (1974)](https://doi.org/10.1175/1520-0469(1974)031%3C1213:CVOM%3E2.0.CO;2).
 At 23.45° (Earth-like tilt) the correction is exactly zero, so vanilla temperatures are preserved.
+
+**Plants survive winter dormancy.**
+Outdoor plants that are too cold to grow (below their minimum growth temperature) no longer die from lack of sunlight.
+Vanilla kills any plant that goes without light for ~7.5 days, which is fine for caves but causes mass die-offs during the long dark winters that high-latitude worlds experience with realistic tilt.
+Plants that don't enter dormancy — crops without cold resistance, tropical plants out of their biome — are unaffected.
 
 **Plant rest periods adjust for extended daylight.**
 With the optional "Realistic plant rest" setting, the plant resting window shrinks to 22:00–02:00 (4 hours) instead of the vanilla ~11 hours, allowing crops and trees to take advantage of midnight-sun growing seasons at high tilts.
@@ -123,6 +134,19 @@ python3 steam_plots.py                # Steam Workshop plots
 **Axial Tilt** — 0° to 90°, sticky at 23.45° (Earth-like).
 **Axial Effect** (k) — 0 = no effect beyond vanilla; 1 = physically correct.
 The in-game UI shows an estimated temperature range (winter low / summer high) at five representative latitudes for the current settings.
+
+## Compatibility
+
+Explicit patches are included for:
+- **[Realistic Planets 2](https://steamcommunity.com/sharedfiles/filedetails/?id=3244790542)** — corrects RP2's precomputed climate arrays and tile temperatures, which otherwise ignore tilt.
+- **[Configurable Maps](https://steamcommunity.com/sharedfiles/filedetails/?id=2345292146)** — world gen UI integration.
+- **[Nice Plants Menu](https://steamcommunity.com/sharedfiles/filedetails/?id=2877856030)** — corrects longitude tuning calculations for plant growth.
+- **[Faction Control](https://steamcommunity.com/sharedfiles/filedetails/?id=2590478270)** — UI layout fix for the world gen screen.
+- **[RimWar](https://steamcommunity.com/sharedfiles/filedetails/?id=1399616068)** — compatibility shim for world gen pipeline.
+
+Not yet patched:
+- **Tilt the Planet** — directly conflicts with sun positioning and tilt angle; no patch yet.
+- Realistic Planets 1.6
 
 ## Roadmap
 

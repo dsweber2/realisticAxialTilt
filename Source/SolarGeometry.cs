@@ -146,6 +146,8 @@ namespace RealisticAxialTilt
         }
 
         private const float ShadowRef = 2.0f;
+        // shadows fade in over this elevation range to avoid absurd lengths at near-horizontal sun
+        internal const float ShadowFadeThreshold = 0.25f; // sin(~14.5°)
 
         internal static Vector2 ComputeShadowVector(float latitude, int dayOfYear, float dayPercent)
         {
@@ -159,6 +161,8 @@ namespace RealisticAxialTilt
             if (sinEl <= 0f)
                 return Vector2.zero;
 
+            float fade = Mathf.Clamp01(sinEl / ShadowFadeThreshold);
+
             Vector3 sunHoriz = sun - sinEl * up;
             float cosEl = sunHoriz.magnitude;
             if (cosEl < 1e-4f)
@@ -167,7 +171,10 @@ namespace RealisticAxialTilt
             float shadowEast  = -Vector3.Dot(sunHoriz, Vector3.forward);
             float shadowNorth = -Vector3.Dot(sunHoriz, north);
             float shadowLength = Mathf.Min(GenCelestial.ShadowMaxLengthDay,
-                ShadowRef * cosEl / Mathf.Max(sinEl, 0.05f));
+                ShadowRef * cosEl / Mathf.Max(sinEl, ShadowFadeThreshold)) * fade;
+
+            if (shadowLength < 0.01f)
+                return Vector2.zero;
 
             float invMag = shadowLength / cosEl;
             return new Vector2(shadowEast * invMag, shadowNorth * invMag);
