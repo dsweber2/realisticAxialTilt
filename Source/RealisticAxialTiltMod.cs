@@ -16,6 +16,8 @@ namespace RealisticAxialTilt
             harmony.PatchAll();
             NicePlantsMenuCompat.TryPatch(harmony);
             FactionControlCompat.TryPatch(harmony);
+            RimWarCompat.TryPatch(harmony);
+            ConfigurableMapsCompat.TryPatch(harmony);
         }
 
         public override void DoSettingsWindowContents(Rect inRect)

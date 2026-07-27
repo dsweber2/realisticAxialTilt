@@ -65,7 +65,6 @@ namespace RealisticAxialTilt.Patches
         {
             _capturedColWidth = colRect.width;
             float ratContentH = 76f + TickAreaH + 3f * RowH;
-            if (Prefs.DevMode) ratContentH += 10f + 30 * 40f;
             // Use previous frame's rowBottom for viewRect sizing.
             // First frame: _lastRowBottom = 0, so contentH == colRect.height (no scroll yet, no overlap).
             // +40f: num2 at EndGroup is the y-pos of the last row label, not past it.
@@ -155,31 +154,37 @@ namespace RealisticAxialTilt.Patches
                     Widgets.Label(new Rect(ii * cellW, tableY, cellW, RowH), rangeStr);
                 }
 
-                if (Prefs.DevMode)
-                {
-                    float devY = tableY + RowH + 10f;
-                    for (int ii = 0; ii < 30; ii++)
-                    {
-                        Widgets.Label(new Rect(0f, devY, 200f, 30f), $"[DEV] Nonsense {ii + 1}");
-                        Widgets.HorizontalSlider(new Rect(200f, devY, innerW, 30f), ii % 10, 0f, 10f,
-                            middleAlignment: true, (ii % 10).ToString(), null, null);
-                        devY += 40f;
-                    }
-                }
             }
 
             Widgets.EndScrollView();
         }
 
-        // Draws the FactionControl button in the correct bottom-bar position (next to
-        // "Reset factions") instead of letting it draw at FactionControl's hardcoded y.
+        // Redraws any suppressed mod buttons in the correct bottom-bar position,
+        // laid out right-to-left from next to "Reset factions".
         [HarmonyPatch(nameof(Page_CreateWorldParams.DoWindowContents))]
         [HarmonyPostfix]
-        static void DrawFactionControlButton(Page_CreateWorldParams __instance, Rect rect)
+        static void DrawCompatButtons(Page_CreateWorldParams __instance, Rect rect)
         {
-            if (!Compat.FactionControlCompat.IsActive) return;
-            Rect mainRect = (Rect)GetMainRect.Invoke(__instance, new object[] { rect, 0f, false });
-            Compat.FactionControlCompat.DrawBottomButton(rect, mainRect);
+            // Dialog is 1020px wide. 201.5px sits between Back and Reset all.
+            // Three 8.5f gaps + two buttons → btnW = 88f fits exactly on either side.
+            const float btnW = 150f;
+            const float gap  = 8.5f;
+            float y = rect.yMax - 38f;
+            // Anchor from the right edge of back
+            float x = 150f + 2f * gap; // 150f = Page.BottomButSize.x; left of Generate
+
+            if (Compat.FactionControlCompat.IsActive)
+            {
+                Compat.FactionControlCompat.DrawBottomButton(new Rect(x, y, btnW, 38f));
+                x += btnW;
+                x += gap;
+            }
+            if (Compat.RimWarCompat.IsActive)
+            {
+                x += 2f * btnW; // center two buttons
+                x += 4f * gap;
+                Compat.RimWarCompat.DrawBottomButton(new Rect(x, y, btnW, 38f), __instance);
+            }
         }
 
         // Replaces vanilla's BeginGroup/EndGroup with scroll-view wrappers so every row
@@ -249,16 +254,34 @@ namespace RealisticAxialTilt.Patches
             Color savedColor = GUI.color;
 
             Text.Font = GameFont.Tiny;
-            Text.Anchor = TextAnchor.UpperCenter;
             GUI.color = new Color(0.7f, 0.7f, 0.7f, 0.9f);
+
+            const float labelW = 70f;
+            const float halfLabel = labelW * 0.5f;
+            float rightEdge = sliderX + sliderWidth;
 
             foreach ((string label, float value) in ticks)
             {
-                float xCenter = sliderX + (value / 90f) * sliderWidth;
+                float xCenter = sliderX + 6f + (value / 90f) * (sliderWidth - 12f);
                 Widgets.DrawLineVertical(xCenter, y, TickLineH);
-                float labelW = 70f;
-                float labelX = Mathf.Clamp(xCenter - labelW * 0.5f, 0f, sliderX + sliderWidth - labelW);
-                Widgets.Label(new Rect(labelX, y + TickLineH, labelW, TickLabelH), label);
+
+                Rect labelRect;
+                if (xCenter - halfLabel < sliderX)
+                {
+                    Text.Anchor = TextAnchor.UpperLeft;
+                    labelRect = new Rect(xCenter, y + TickLineH, labelW, TickLabelH);
+                }
+                else if (xCenter + halfLabel > rightEdge)
+                {
+                    Text.Anchor = TextAnchor.UpperRight;
+                    labelRect = new Rect(xCenter - labelW, y + TickLineH, labelW, TickLabelH);
+                }
+                else
+                {
+                    Text.Anchor = TextAnchor.UpperCenter;
+                    labelRect = new Rect(xCenter - halfLabel, y + TickLineH, labelW, TickLabelH);
+                }
+                Widgets.Label(labelRect, label);
             }
 
             Text.Font = savedFont;
