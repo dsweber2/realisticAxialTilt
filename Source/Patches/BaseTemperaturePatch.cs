@@ -29,7 +29,7 @@ namespace RealisticAxialTilt.Patches
         private static void Postfix(float lat, ref float __result)
         {
             if (RealisticPlanets2Compat.IsActive) return;
-            __result += SolarGeometry.AnnualTemperatureCorrection(lat);
+            __result += AxialAnnualTemperature.AnnualTemperatureCorrection(lat);
         }
     }
 

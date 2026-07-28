@@ -14,7 +14,7 @@ namespace RealisticAxialTilt.Patches
         {
             if (RealisticPlanets2Compat.IsActive) return;
             float lat = Find.WorldGrid.LongLatOf(tile).y;
-            __result *= SolarGeometry.SeasonalAmplitudeScale(lat);
+            __result *= AxialSeasonalTemperature.SeasonalAmplitudeScale(lat);
         }
     }
 }

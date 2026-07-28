@@ -145,7 +145,7 @@ namespace RealisticAxialTilt.Patches
 
                 for (int ii = 0; ii < ColHeaders.Length; ii++)
                 {
-                    (float tMin, float tMax) = SolarGeometry.ApproxTempRange(ColLats[ii], tilt, k);
+                    (float tMin, float tMax) = AxialSeasonalTemperature.ApproxTempRange(ColLats[ii], tilt, k);
                     if (tempCurve != null)
                     {
                         tMin = tempCurve.Evaluate(tMin);

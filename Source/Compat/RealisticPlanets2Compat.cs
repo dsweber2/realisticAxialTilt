@@ -78,7 +78,7 @@ namespace RealisticAxialTilt.Compat
             for (int ii = 0; ii < tileCount; ii++)
             {
                 float latDeg = latitudeSigned[ii] * Mathf.Rad2Deg;
-                float correction = SolarGeometry.AnnualTemperatureCorrection(latDeg);
+                float correction = AxialAnnualTemperature.AnnualTemperatureCorrection(latDeg);
 
                 annualMeanTemp[ii] += correction;
 

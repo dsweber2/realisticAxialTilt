@@ -59,19 +59,13 @@ Useful if you want the visual effect of a crazy tilt without the gameplay conseq
 ## Compatibility
 - Works with existing saves, should be safe to remove (haven't tried that yet).
 - Should be compatible with most biome mods — it changes selection, not the biomes selected.
-- Not compatible with mods that patch sun positioning, map glow, or temperature as a function of latitude. It should be fine with mods that adjust visual lightness such as moon-glow.
-
-Explicit patches included for:
-- [Realistic Planets 2](https://steamcommunity.com/sharedfiles/filedetails/?id=3244790542) — corrects RP2's climate arrays for non-Earth tilts. Untested, may have unreasonble extremes
-- Generation menu: [Configurable Maps](https://steamcommunity.com/sharedfiles/filedetails/?id=2345292146), [Faction Control](https://steamcommunity.com/sharedfiles/filedetails/?id=2590478270), [RimWar](https://steamcommunity.com/sharedfiles/filedetails/?id=1399616068)
-- [Nice Plants Menu](https://steamcommunity.com/sharedfiles/filedetails/?id=2877856030) adjust growth calculations
-- **Not yet patched:** Tilt the Planet — directly conflicts with sun positioning; avoid using both at once.
+- Currently incompatible with mods that patch sun positioning, map glow, or temperature as a function of latitude, except Realistic Planets 2. It should be fine with mods that adjust moon-glow.
+- Patched for [Nice Plants Menu](https://steamcommunity.com/sharedfiles/filedetails/?id=2877856030) to adjust growth calculations
 
 ---
 ## Plans
 This mod is specifically meant for just direct effects of the axial tilt. I may make some follow up mods or add adjustments directly related to solar light levels. Some ideas for related mods:
 - Custom biome definitions tuned for non-Earth tilts (e.g. polar deserts, equatorial tundra), along with biome patching to add temperature *range* as part of biome map placement.
-- Adjust plant growth estimates and give yield/year estimates to make overwintering easier (this may just mean patching some existing mods)
 ---
 ### Copyright
 This is Creative Commons. Feel free to use it however you want, as long as you attribute me. I'm happy to adapt to integrate with other mods if it makes sense or help you do that. You cannot copyright ideas, algorithms, or math, just code.
