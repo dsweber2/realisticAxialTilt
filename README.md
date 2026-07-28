@@ -50,6 +50,7 @@ At 23.45° (Earth-like tilt) the correction is exactly zero, so vanilla temperat
 Outdoor plants that are too cold to grow (below their minimum growth temperature) no longer die from lack of sunlight.
 Vanilla kills any plant that goes without light for ~7.5 days, which is fine for caves but causes mass die-offs during the long dark winters that high-latitude worlds experience with realistic tilt.
 Plants that don't enter dormancy — crops without cold resistance, tropical plants out of their biome — are unaffected.
+The specific check uses `Leafless` to filter to only plants we expect to be winter tolerant, and is applied to plants with light level at or above the outdoor light level.
 
 **Plant rest periods adjust for extended daylight.**
 With the optional "Realistic plant rest" setting, the plant resting window shrinks to 22:00–02:00 (4 hours) instead of the vanilla ~11 hours, allowing crops and trees to take advantage of midnight-sun growing seasons at high tilts.
