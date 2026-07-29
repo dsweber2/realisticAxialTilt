@@ -1,4 +1,5 @@
 using HarmonyLib;
+using RealisticAxialTilt.Api;
 using RimWorld;
 using RimWorld.Planet;
 using UnityEngine;
@@ -13,6 +14,9 @@ namespace RealisticAxialTilt.Patches
         [HarmonyPrefix]
         private static bool Prefix(float latitude, int dayOfYear, float dayPercent, ref Vector3 __result)
         {
+            if (RealisticAxialTiltApi.LightingSuppressed)
+                return true;
+
             __result = SolarGeometry.ComputeSunPosition((float)dayOfYear, dayPercent, new Vector3(1f, 0f, 0f));
             return false;
         }
@@ -24,6 +28,9 @@ namespace RealisticAxialTilt.Patches
         [HarmonyPrefix]
         private static bool Prefix(ref Vector3 __result)
         {
+            if (RealisticAxialTiltApi.LightingSuppressed)
+                return true;
+
             int ticks;
             if (Current.ProgramState != ProgramState.Entry)
             {

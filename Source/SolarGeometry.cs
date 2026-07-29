@@ -14,12 +14,51 @@ namespace RealisticAxialTilt
         internal static readonly float SinEarthTilt = Mathf.Sin(23.45f * Mathf.Deg2Rad);
         internal static readonly float CosEarthTilt = Mathf.Cos(23.45f * Mathf.Deg2Rad);
 
+        // Backing state for the public Api surface; see Api/RealisticAxialTiltApi.cs.
+        internal static float TiltDegrees;
+        internal static bool Ready;
+        internal static int Generation;
+
         internal static void ApplyAxialTilt(float tiltDeg, float k)
         {
             float rad = tiltDeg * Mathf.Deg2Rad;
             sinTilt = Mathf.Sin(rad);
             cosTilt = Mathf.Cos(rad);
             dampingK = k;
+
+            TiltDegrees = tiltDeg;
+            Ready = true;
+            Generation++;
+        }
+
+        internal static float DeclinationDegrees(float dayOfYear)
+        {
+            float S = Mathf.Sin(dayOfYear / 60f * Mathf.PI * 2f);
+            return Mathf.Asin(Mathf.Clamp(sinTilt * S, -1f, 1f)) * Mathf.Rad2Deg;
+        }
+
+        internal static float ElevationDegrees(float latitude, float dayOfYear, float dayPercent)
+        {
+            Vector3 sun = ComputeSunPosition(dayOfYear, dayPercent, new Vector3(1f, 0f, 0f));
+            float latRad = latitude * Mathf.Deg2Rad;
+            Vector3 up = new Vector3(Mathf.Cos(latRad), Mathf.Sin(latRad), 0f);
+            return Mathf.Asin(Mathf.Clamp(Vector3.Dot(sun, up), -1f, 1f)) * Mathf.Rad2Deg;
+        }
+
+        internal static float AzimuthDegrees(float latitude, float dayOfYear, float dayPercent)
+        {
+            Vector3 sun = ComputeSunPosition(dayOfYear, dayPercent, new Vector3(1f, 0f, 0f));
+            float latRad = latitude * Mathf.Deg2Rad;
+            Vector3 up = new Vector3(Mathf.Cos(latRad), Mathf.Sin(latRad), 0f);
+            Vector3 north = new Vector3(-Mathf.Sin(latRad), Mathf.Cos(latRad), 0f);
+
+            Vector3 sunHoriz = sun - Vector3.Dot(sun, up) * up;
+            if (sunHoriz.magnitude < 1e-4f)
+                return 0f;
+
+            float deg = Mathf.Atan2(Vector3.Dot(sunHoriz, Vector3.forward),
+                                    Vector3.Dot(sunHoriz, north)) * Mathf.Rad2Deg;
+            return Mathf.Repeat(deg, 360f);
         }
 
         internal static Vector3 ComputeSunPosition(float dayOfYear, float dayPercent, Vector3 initialSunPos)

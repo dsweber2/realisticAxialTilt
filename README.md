@@ -148,6 +148,28 @@ Not yet patched:
 - **Tilt the Planet** — directly conflicts with sun positioning and tilt angle; no patch yet.
 - Realistic Planets 1.6
 
+### For mod authors
+
+`RealisticAxialTilt.Api.RealisticAxialTiltApi` is a stable static surface other mods can bind to by
+reflection (`AccessTools.TypeByName("RealisticAxialTilt.Api.RealisticAxialTiltApi")`), with no
+assembly reference. Everything else in the assembly is `internal` and may change; `ApiVersion` is
+bumped only on breaking changes, so gate on `>=`.
+
+**Geometry.** `SolarDeclinationDegrees`, `SolarElevationDegrees`, `SolarAzimuthDegrees`,
+`SunriseSunset`, plus `AxialTiltDegrees` and `SeasonalDampingK`. Check `GeometryReady` first —
+before a world is loaded the tilt is unseeded and the values are meaningless. `GeometryGeneration`
+bumps on every world gen or load, so cache against it.
+
+Prefer `SolarDeclinationDegrees` over re-deriving declination from `AxialTiltDegrees`: it carries
+this mod's seasonal phase as well as its tilt, so a consumer using it stays in agreement even if
+that phase changes later.
+
+**Lighting handover.** A mod that draws its own sun, shadows or sky glow calls
+`TryClaimLighting(yourPackageId)`; every lighting patch here then stands down, including any added
+later. Axial tilt gameplay — temperature, seasonal amplitude, plant rest and dormancy, the world
+gen UI — is unaffected. Claims are first-wins, and the settings screen names the current claimant.
+A settings checkbox mirrors the flag for conflicting mods that don't use the API.
+
 ## Roadmap
 
 - potential future mod: custom biome definitions tuned for non-Earth tilts (e.g. polar deserts, equatorial tundra)

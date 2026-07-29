@@ -1,4 +1,5 @@
 using HarmonyLib;
+using RealisticAxialTilt.Api;
 using UnityEngine;
 using Verse;
 
@@ -17,6 +18,9 @@ namespace RealisticAxialTilt.Patches
         [HarmonyPostfix]
         private static void Postfix(SectionLayer layer, int __state)
         {
+            if (RealisticAxialTiltApi.LightingSuppressed)
+                return;
+
             LayerSubMesh subMesh = layer.GetSubMesh(MatBases.SunShadowFade);
             int pre = __state;
 

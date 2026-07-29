@@ -1,4 +1,5 @@
 using HarmonyLib;
+using RealisticAxialTilt.Api;
 using RimWorld;
 using RimWorld.Planet;
 using UnityEngine;
@@ -12,6 +13,9 @@ namespace RealisticAxialTilt.Patches
         [HarmonyPostfix]
         private static void Postfix(Map map, ref float __result)
         {
+            if (RealisticAxialTiltApi.LightingSuppressed)
+                return;
+
             Vector2 lonLat   = Find.WorldGrid.LongLatOf(map.Tile);
             int dayOfYear    = GenDate.DayOfYear(GenTicks.TicksAbs, lonLat.x);
             float dayPct     = GenLocalDate.DayPercent(map);
