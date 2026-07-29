@@ -1,4 +1,5 @@
 using HarmonyLib;
+using RealisticAxialTilt.Api;
 using RealisticAxialTilt.Compat;
 using UnityEngine;
 using Verse;
@@ -25,6 +26,11 @@ namespace RealisticAxialTilt
             Listing_Standard listing = new Listing_Standard();
             listing.Begin(inRect);
             listing.CheckboxLabeled("RAT_RealisticPlantRest".Translate(), ref Settings.realisticPlantRest, "RAT_RealisticPlantRestDesc".Translate());
+
+            listing.CheckboxLabeled("RAT_SuppressLighting".Translate(), ref Settings.suppressLighting, "RAT_SuppressLightingDesc".Translate());
+            if (RealisticAxialTiltApi.LightingOwner != null)
+                listing.Label("RAT_LightingClaimedBy".Translate(RealisticAxialTiltApi.LightingOwner));
+
             listing.End();
         }
 

@@ -1,4 +1,5 @@
 using HarmonyLib;
+using RealisticAxialTilt.Api;
 using RimWorld;
 using RimWorld.Planet;
 using UnityEngine;
@@ -12,6 +13,9 @@ namespace RealisticAxialTilt.Patches
         [HarmonyPostfix]
         private static void Postfix(Map map, GenCelestial.LightType type, ref GenCelestial.LightInfo __result)
         {
+            if (RealisticAxialTiltApi.LightingSuppressed)
+                return;
+
             if (type != GenCelestial.LightType.Shadow)
                 return;
 
