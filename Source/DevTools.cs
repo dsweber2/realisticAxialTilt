@@ -116,6 +116,15 @@ namespace RealisticAxialTilt
             string srStr  = srss.HasValue ? HourStr(srss.Value.sunrise) : polar;
             string ssStr  = srss.HasValue ? HourStr(srss.Value.sunset)  : polar;
 
+            float   moonPhase   = SolarGeometry.LunarCyclePosition(GenTicks.TicksAbs);
+            float   moonElDeg   = SolarGeometry.LunarElevationDegrees(lat, dayOfYear, dayPct, moonPhase);
+            float   moonAzDeg   = SolarGeometry.LunarAzimuthDegrees(lat, dayOfYear, dayPct, moonPhase);
+            string  moonAzStr   = moonElDeg > -89.9f && moonElDeg < 89.9f ? $"{moonAzDeg:F1}°" : "N/A (zenith)";
+            string phaseLabel = moonPhase < 0.05f || moonPhase > 0.95f ? "new"
+                              : moonPhase < 0.45f ? "waxing"
+                              : moonPhase < 0.55f ? "full"
+                              : "waning";
+
             Log.Message(
                 $"[RAT] lat={lat:F1}°  day={dayOfYear}  time={dayPct * 24f:F2}h\n" +
                 $"  elevation={elDeg:F1}°  azimuth={azStr}\n" +

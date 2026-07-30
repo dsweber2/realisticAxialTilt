@@ -43,6 +43,37 @@ namespace RealisticAxialTilt.Api
         public static (float sunrise, float sunset)? SunriseSunset(float latitudeDeg, int dayOfYear) =>
             SolarGeometry.ComputeSunriseSunset(latitudeDeg, dayOfYear);
 
+        // --- Lunar geometry ---
+        //
+        // All functions below use the same axial tilt and ecliptic model as the solar functions above,
+        // with the moon treated as a second body offset from the sun by its elongation (cyclePosition
+        // * 360°). Pass LunarCyclePosition() for the current tick, or supply your own cycle position
+        // (e.g. from a lunar-phase GameComponent that supports eclipse staging) for any offset.
+
+        // Fraction [0,1) through the synodic cycle for the current absolute tick.
+        // 0 = new moon (aligned with sun), 0.5 = full moon (opposite).
+        public static float LunarCyclePosition() =>
+            SolarGeometry.LunarCyclePosition(GenTicks.TicksAbs);
+
+        // Moon's declination in degrees, accounting for the inclined orbit and node position.
+        // At inclination 0 and cyclePosition 0 this equals SolarDeclinationDegrees exactly.
+        public static float LunarDeclinationDegrees(float dayOfYear, float cyclePosition) =>
+            SolarGeometry.LunarDeclinationDegrees(dayOfYear, cyclePosition);
+
+        // Geometric elevation of the moon; no atmospheric refraction applied, horizon is 0.
+        public static float LunarElevationDegrees(float latitudeDeg, float dayOfYear, float dayPercent, float cyclePosition) =>
+            SolarGeometry.LunarElevationDegrees(latitudeDeg, dayOfYear, dayPercent, cyclePosition);
+
+        // Clockwise from north, [0,360). Returns 0 at zenith/nadir where azimuth is undefined.
+        public static float LunarAzimuthDegrees(float latitudeDeg, float dayOfYear, float dayPercent, float cyclePosition) =>
+            SolarGeometry.LunarAzimuthDegrees(latitudeDeg, dayOfYear, dayPercent, cyclePosition);
+
+        // (moonrise, moonset) as solar dayPercent values [0,1), or null for circumpolar.
+        // Cycle position is fixed at the call site — for the current tick use LunarCyclePosition().
+        // Values are in solar day-percent space so they can be compared directly with SunriseSunset.
+        public static (float moonrise, float moonset)? MoonriseMoonset(float latitudeDeg, float dayOfYear, float cyclePosition) =>
+            SolarGeometry.ComputeMoonriseMoonset(latitudeDeg, dayOfYear, cyclePosition);
+
         // Lighting handover. A mod that renders its own sun/shadows/glow claims this once and
         // every lighting patch here stands down; tilt gameplay (temperature, seasonal amplitude,
         // plant rest/dormancy, world-params UI) is unaffected.
