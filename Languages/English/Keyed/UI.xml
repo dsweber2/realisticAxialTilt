@@ -13,4 +13,7 @@
   <RAT_MoonOrbitalDaysDesc>How many days the moon takes to complete one orbit. This drives its phase cycle: new moon (with the sun, daytime) through full moon (opposite the sun, midnight) and back. Default is 9 days (~6-7 cycles per year). Earth-like relative to a 60-day year is ~4.55 days.</RAT_MoonOrbitalDaysDesc>
   <RAT_MoonInclination>Moon orbital inclination: {0}°</RAT_MoonInclination>
   <RAT_MoonInclinationDesc>Tilt of the moon's orbit relative to the ecliptic. Higher values let the moon stray further north or south of the sun's path, varying its arc height over an ~18-year nodal cycle. Earth-like is 5.1°. Set to 0 for a moon locked exactly to the ecliptic.</RAT_MoonInclinationDesc>
+  <RAT_SuppressLighting>Let another mod handle lighting</RAT_SuppressLighting>
+  <RAT_SuppressLightingDesc>Stops this mod from drawing the sun, shadows and sky glow, leaving them to another lighting mod. Axial tilt still drives temperature, seasons and plant growth. Compatible lighting mods set this automatically; tick it by hand only if one conflicts without doing so.</RAT_SuppressLightingDesc>
+  <RAT_LightingClaimedBy>Lighting is currently handled by: {0}</RAT_LightingClaimedBy>
 </LanguageData>

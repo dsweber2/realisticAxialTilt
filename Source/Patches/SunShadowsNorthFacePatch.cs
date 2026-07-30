@@ -1,4 +1,5 @@
 using HarmonyLib;
+using RealisticAxialTilt.Api;
 using UnityEngine;
 using Verse;
 
@@ -18,6 +19,9 @@ namespace RealisticAxialTilt.Patches
         [HarmonyPrefix]
         private static bool Prefix(SectionLayer __instance)
         {
+            if (RealisticAxialTiltApi.LightingSuppressed)
+                return true;
+
             if (!MatBases.SunShadow.shader.isSupported)
                 return false;
 

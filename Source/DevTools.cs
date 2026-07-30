@@ -116,23 +116,10 @@ namespace RealisticAxialTilt
             string srStr  = srss.HasValue ? HourStr(srss.Value.sunrise) : polar;
             string ssStr  = srss.HasValue ? HourStr(srss.Value.sunset)  : polar;
 
-            float   moonPhase   = (GenTicks.TicksAbs / (RealisticAxialTiltMod.Settings.moonOrbitalDays * GenDate.TicksPerDay)) % 1f;
-            Vector3 moonPos     = SolarGeometry.ComputeMoonPosition(dayOfYear, dayPct,
-                                      RealisticAxialTiltMod.Settings.moonOrbitalDays,
-                                      RealisticAxialTiltMod.Settings.moonInclinationDeg,
-                                      GenTicks.TicksAbs);
-            float   moonSinEl   = Vector3.Dot(moonPos, up);
-            float   moonElDeg   = Mathf.Asin(Mathf.Clamp(moonSinEl, -1f, 1f)) * Mathf.Rad2Deg;
-            Vector3 moonHoriz   = moonPos - moonSinEl * up;
-            string  moonAzStr   = "N/A (zenith)";
-            if (moonHoriz.magnitude > 1e-4f)
-            {
-                float mE  = Vector3.Dot(moonHoriz, Vector3.forward) / moonHoriz.magnitude;
-                float mN  = Vector3.Dot(moonHoriz, north) / moonHoriz.magnitude;
-                float mAz = Mathf.Atan2(mE, mN) * Mathf.Rad2Deg;
-                if (mAz < 0f) mAz += 360f;
-                moonAzStr = $"{mAz:F1}°";
-            }
+            float   moonPhase   = SolarGeometry.LunarCyclePosition(GenTicks.TicksAbs);
+            float   moonElDeg   = SolarGeometry.LunarElevationDegrees(lat, dayOfYear, dayPct, moonPhase);
+            float   moonAzDeg   = SolarGeometry.LunarAzimuthDegrees(lat, dayOfYear, dayPct, moonPhase);
+            string  moonAzStr   = moonElDeg > -89.9f && moonElDeg < 89.9f ? $"{moonAzDeg:F1}°" : "N/A (zenith)";
             string phaseLabel = moonPhase < 0.05f || moonPhase > 0.95f ? "new"
                               : moonPhase < 0.45f ? "waxing"
                               : moonPhase < 0.55f ? "full"
