@@ -16,6 +16,8 @@ namespace RealisticAxialTilt.Patches
         {
             if (!RealisticAxialTiltMod.Settings.realisticPlantRest)
                 return true;
+            if (__instance.def.plant.growMinGlow == 0f)
+                return true;
 
             float dayPercent = GenLocalDate.DayPercent(__instance);
             __result = dayPercent > RestStart || dayPercent < RestEnd;

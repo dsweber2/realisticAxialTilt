@@ -116,12 +116,35 @@ namespace RealisticAxialTilt
             string srStr  = srss.HasValue ? HourStr(srss.Value.sunrise) : polar;
             string ssStr  = srss.HasValue ? HourStr(srss.Value.sunset)  : polar;
 
+            float   moonPhase   = (GenTicks.TicksAbs / (RealisticAxialTiltMod.Settings.moonOrbitalDays * GenDate.TicksPerDay)) % 1f;
+            Vector3 moonPos     = SolarGeometry.ComputeMoonPosition(dayOfYear, dayPct,
+                                      RealisticAxialTiltMod.Settings.moonOrbitalDays,
+                                      RealisticAxialTiltMod.Settings.moonInclinationDeg,
+                                      GenTicks.TicksAbs);
+            float   moonSinEl   = Vector3.Dot(moonPos, up);
+            float   moonElDeg   = Mathf.Asin(Mathf.Clamp(moonSinEl, -1f, 1f)) * Mathf.Rad2Deg;
+            Vector3 moonHoriz   = moonPos - moonSinEl * up;
+            string  moonAzStr   = "N/A (zenith)";
+            if (moonHoriz.magnitude > 1e-4f)
+            {
+                float mE  = Vector3.Dot(moonHoriz, Vector3.forward) / moonHoriz.magnitude;
+                float mN  = Vector3.Dot(moonHoriz, north) / moonHoriz.magnitude;
+                float mAz = Mathf.Atan2(mE, mN) * Mathf.Rad2Deg;
+                if (mAz < 0f) mAz += 360f;
+                moonAzStr = $"{mAz:F1}°";
+            }
+            string phaseLabel = moonPhase < 0.05f || moonPhase > 0.95f ? "new"
+                              : moonPhase < 0.45f ? "waxing"
+                              : moonPhase < 0.55f ? "full"
+                              : "waning";
+
             Log.Message(
                 $"[RAT] lat={lat:F1}°  day={dayOfYear}  time={dayPct * 24f:F2}h\n" +
-                $"  elevation={elDeg:F1}°  azimuth={azStr}\n" +
+                $"  sun  elevation={elDeg:F1}°  azimuth={azStr}\n" +
                 $"  sunrise={srStr}  sunset={ssStr}\n" +
                 $"  glow={glow:F3}  isDaytime={GenCelestial.IsDaytime(glow)}\n" +
-                $"  shadow=(E={shadow.x:F2}, N={shadow.y:F2})  |shadow|={shadow.magnitude:F2}");
+                $"  shadow=(E={shadow.x:F2}, N={shadow.y:F2})  |shadow|={shadow.magnitude:F2}\n" +
+                $"  moon elevation={moonElDeg:F1}°  azimuth={moonAzStr}  phase={moonPhase:F3} ({phaseLabel})");
         }
     }
 }

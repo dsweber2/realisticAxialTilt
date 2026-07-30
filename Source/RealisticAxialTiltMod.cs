@@ -18,6 +18,7 @@ namespace RealisticAxialTilt
             FactionControlCompat.TryPatch(harmony);
             RimWarCompat.TryPatch(harmony);
             ConfigurableMapsCompat.TryPatch(harmony);
+            MoonlightCompat.TryPatch(harmony);
         }
 
         public override void DoSettingsWindowContents(Rect inRect)
@@ -25,6 +26,14 @@ namespace RealisticAxialTilt
             Listing_Standard listing = new Listing_Standard();
             listing.Begin(inRect);
             listing.CheckboxLabeled("RAT_RealisticPlantRest".Translate(), ref Settings.realisticPlantRest, "RAT_RealisticPlantRestDesc".Translate());
+            Settings.moonOrbitalDays = listing.SliderLabeled(
+                "RAT_MoonOrbitalDays".Translate(Settings.moonOrbitalDays.ToString("F2")),
+                Settings.moonOrbitalDays, 1f, 30f,
+                tooltip: "RAT_MoonOrbitalDaysDesc".Translate());
+            Settings.moonInclinationDeg = listing.SliderLabeled(
+                "RAT_MoonInclination".Translate(Settings.moonInclinationDeg.ToString("F1")),
+                Settings.moonInclinationDeg, 0f, 30f,
+                tooltip: "RAT_MoonInclinationDesc".Translate());
             listing.End();
         }
 

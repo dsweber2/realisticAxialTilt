@@ -45,7 +45,7 @@ namespace RealisticAxialTilt.Compat
             if (_axialTiltField == null)
                 return 23.45f;
 
-            return (int)_axialTiltField.GetValue(null) * 11.25f;
+            return Convert.ToInt32(_axialTiltField.GetValue(null)) * 11.25f;
         }
 
         // After RP2's world gen pipeline completes, applies RAT's axial-tilt-based annual mean

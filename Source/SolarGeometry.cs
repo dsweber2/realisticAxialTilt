@@ -79,7 +79,7 @@ namespace RealisticAxialTilt
             float shadowEast  = -Vector3.Dot(sunHoriz, Vector3.forward);
             float shadowNorth = -Vector3.Dot(sunHoriz, north);
             float shadowLength = Mathf.Min(GenCelestial.ShadowMaxLengthDay,
-                ShadowRef * cosEl / Mathf.Max(sinEl, ShadowFadeThreshold)) * fade;
+                ShadowRef * cosEl / sinEl) * fade;
 
             if (shadowLength < 0.01f)
                 return Vector2.zero;
