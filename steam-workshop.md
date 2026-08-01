@@ -1,7 +1,7 @@
 # Realistic Axial Tilt — Steam Workshop description
 ---
-In vanilla RimWorld, the planet always behaves as if it has an Earth-like tilt, fudging light outside of the poles to be at the same angle, and setting plants to always have a 12 hour rest/growth period.
-This mod makes axial tilt have a realistic effect.
+In vanilla, the planet always behaves as if it has an Earth-like tilt, fudging light outside of the poles to be at the same angle, and setting plants to always have a 12 hour rest/growth period.
+This mod makes axial tilt have a realistic gameplay effects. If you're looking for purely visual effects for earth-like tilts specifically, see [Celestial Lighting](https://steamcommunity.com/sharedfiles/filedetails/?id=3771657885).
 ---
 ## What changes
 - **Day length** varies by latitude and season. And anything affected by light level (mood, aim, surgery, work speed, etc).
@@ -30,7 +30,6 @@ The poles warm up on average, with dramatic swings around that average.
 The poles spend half the year in total darkness and half in continuous sunlight; if you don't have space gear it's going to be dangerous, possibly immediately lethal apart from the equinoxes. 80°C near the pole is totally possible at the solstice.
 Annual averages flatten out globally; you typically get glaciers in the highest elevation equatorial mountains.
 Ice caps disappear, replaced with deserts.
-> (All of these are using [Alpha Biomes](https://steamcommunity.com/sharedfiles/filedetails/?id=1841354677), [Biomes! Core](https://steamcommunity.com/sharedfiles/filedetails/?id=2038000893), [Biomes! Fossils](https://steamcommunity.com/sharedfiles/filedetails/?id=3100958580), [Biomes! Caverns](https://steamcommunity.com/sharedfiles/filedetails/?id=2969748433), [Biomes! Oasis](https://steamcommunity.com/sharedfiles/filedetails/?id=2538518381), [Biomes! Polluted Lands](https://steamcommunity.com/sharedfiles/filedetails/?id=3390196656), [Biomes! Prehistoric](https://steamcommunity.com/sharedfiles/filedetails/?id=2860715703), [More Vanilla Biomes](https://steamcommunity.com/sharedfiles/filedetails/?id=1931453053), [Geological Landforms](https://steamcommunity.com/sharedfiles/filedetails/?id=2773943594), [Biome Transitions](https://steamcommunity.com/sharedfiles/filedetails/?id=2814391846), and [ReGrowth 2](https://steamcommunity.com/sharedfiles/filedetails/?id=2260097569).)
 ---
 ## Temperature graphs
 **Annual average temperatures by latitude:**
@@ -59,8 +58,10 @@ Useful if you want the visual effect of a crazy tilt without the gameplay conseq
 ## Compatibility
 - Works with existing saves, should be safe to remove (haven't tried that yet).
 - Should be compatible with most biome mods — it changes selection, not the biomes selected.
-- Currently incompatible with mods that patch sun positioning, map glow, or temperature as a function of latitude, except Realistic Planets 2. It should be fine with mods that adjust moon-glow.
+- Patched for  [Celestial Lighting](https://steamcommunity.com/sharedfiles/filedetails/?id=3771657885) my current suggestion for a lighting-specifc extension of this mod.
+- [Realistic Planets 2](https://steamcommunity.com/sharedfiles/filedetails/?id=3244790542) — corrects RP2's precomputed climate arrays and tile temperatures, which otherwise ignore tilt.
 - Patched for [Nice Plants Menu](https://steamcommunity.com/sharedfiles/filedetails/?id=2877856030) to adjust growth calculations
+- should work with dubs skylights, needs a bit more testing however (slight chance plants die in deep winter)
 
 ---
 ## Plans
@@ -68,7 +69,7 @@ This mod is specifically meant for just direct effects of the axial tilt. I may 
 - Custom biome definitions tuned for non-Earth tilts (e.g. polar deserts, equatorial tundra), along with biome patching to add temperature *range* as part of biome map placement.
 ---
 ### Copyright
-This is Creative Commons. Feel free to use it however you want, as long as you attribute me. I'm happy to adapt to integrate with other mods if it makes sense or help you do that. You cannot copyright ideas, algorithms, or math, just code.
+This is Creative Commons. Feel free to use it however you want, as long as you attribute me. I'm happy to adapt to integrate with other mods if it makes sense or help you do that.
 ---
 ### Code generation
 I used Claude code in the process of making this package. Keep thinking.

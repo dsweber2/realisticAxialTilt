@@ -139,6 +139,7 @@ The in-game UI shows an estimated temperature range (winter low / summer high) a
 ## Compatibility
 
 Explicit patches are included for:
+-  **[Celestial Lighting](https://steamcommunity.com/sharedfiles/filedetails/?id=3771657885)** my current suggestion for a lighting-specifc extension of this mod. RAT has very basic adjustments, CL has gone the full nine yards
 - **[Realistic Planets 2](https://steamcommunity.com/sharedfiles/filedetails/?id=3244790542)** — corrects RP2's precomputed climate arrays and tile temperatures, which otherwise ignore tilt.
 - **[Configurable Maps](https://steamcommunity.com/sharedfiles/filedetails/?id=2345292146)** — world gen UI integration.
 - **[Nice Plants Menu](https://steamcommunity.com/sharedfiles/filedetails/?id=2877856030)** — corrects longitude tuning calculations for plant growth.
