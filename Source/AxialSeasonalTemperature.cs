@@ -53,7 +53,7 @@ namespace RealisticAxialTilt
             float x = Mathf.Abs(latDeg) / 90f;
             float vanillaAmp = VanillaSeasonalAmpByLat.Evaluate(x);
             float sinT = Mathf.Sin(tiltDeg * Mathf.Deg2Rad);
-            float phi = latDeg * Mathf.Deg2Rad;
+            float phi = Mathf.Abs(latDeg) * Mathf.Deg2Rad;
             float num = DailyInsolation(phi, sinT) - DailyInsolation(phi, -sinT);
             float den = DailyInsolation(phi, SolarGeometry.SinEarthTilt) - DailyInsolation(phi, -SolarGeometry.SinEarthTilt);
             float ampScale = den > 1e-6f ? Mathf.Pow(num / den, k) : Mathf.Pow(sinT / SolarGeometry.SinEarthTilt, k);
