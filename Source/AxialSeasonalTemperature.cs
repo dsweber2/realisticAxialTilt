@@ -19,7 +19,7 @@ namespace RealisticAxialTilt
         // reproduces standard rimworld temperatures at an inclination of 23
         internal static float SeasonalAmplitudeScale(float latDeg)
         {
-            float phi = latDeg * Mathf.Deg2Rad;
+            float phi = Mathf.Abs(latDeg) * Mathf.Deg2Rad;
             float num = DailyInsolation(phi, SolarGeometry.sinTilt) - DailyInsolation(phi, -SolarGeometry.sinTilt);
             float den = DailyInsolation(phi, SolarGeometry.SinEarthTilt) - DailyInsolation(phi, -SolarGeometry.SinEarthTilt);
             float ratio = den > 1e-6f ? num / den : SolarGeometry.sinTilt / SolarGeometry.SinEarthTilt;
