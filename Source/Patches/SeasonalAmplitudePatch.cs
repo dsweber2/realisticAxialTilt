@@ -12,7 +12,7 @@ namespace RealisticAxialTilt.Patches
         [HarmonyPostfix]
         private static void Postfix(PlanetTile tile, ref float __result)
         {
-            if (RealisticPlanets2Compat.IsActive) return;
+            if (RealisticPlanets2Compat.IsActive || WorldbuilderCompat.IsActive) return;
             float lat = Find.WorldGrid.LongLatOf(tile).y;
             __result *= AxialSeasonalTemperature.SeasonalAmplitudeScale(lat);
         }

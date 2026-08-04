@@ -20,6 +20,7 @@ namespace RealisticAxialTilt
             RimWarCompat.TryPatch(harmony);
             ConfigurableMapsCompat.TryPatch(harmony);
             MoonlightCompat.TryPatch(harmony);
+            WorldbuilderCompat.TryPatch(harmony);
         }
 
         public override void DoSettingsWindowContents(Rect inRect)

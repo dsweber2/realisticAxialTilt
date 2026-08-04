@@ -27,10 +27,10 @@ namespace RealisticAxialTilt.Patches
 
         private const float RowH = 22f;
         private const float EarthTilt = 23.45f;
-        private const float StickyRadius = 1.0f;
+        internal const float StickyRadius = 1.0f;
         private const float TickLineH = 6f;
         private const float TickLabelH = 16f;
-        private const float TickAreaH = TickLineH + TickLabelH;
+        internal const float TickAreaH = TickLineH + TickLabelH;
         private const float ScrollBarW = 17f;
 
         // Updated every frame by DrawRATAndEndScroll; used by BeginColumnScrollView
@@ -41,7 +41,7 @@ namespace RealisticAxialTilt.Patches
 
         private static List<(string Label, float Value)> _cachedTicks;
 
-        private static List<(string Label, float Value)> GetTicks()
+        internal static List<(string Label, float Value)> GetTicks()
         {
             if (_cachedTicks != null)
                 return _cachedTicks;
@@ -244,7 +244,7 @@ namespace RealisticAxialTilt.Patches
             return list;
         }
 
-        private static void DrawTicks(float y, float sliderX, float sliderWidth)
+        internal static void DrawTicks(float y, float sliderX, float sliderWidth)
         {
             var ticks = GetTicks();
             if (ticks.Count == 0)
@@ -267,21 +267,8 @@ namespace RealisticAxialTilt.Patches
                 Widgets.DrawLineVertical(xCenter, y, TickLineH);
 
                 Rect labelRect;
-                if (xCenter - halfLabel < sliderX)
-                {
-                    Text.Anchor = TextAnchor.UpperLeft;
-                    labelRect = new Rect(xCenter, y + TickLineH, labelW, TickLabelH);
-                }
-                else if (xCenter + halfLabel > rightEdge)
-                {
-                    Text.Anchor = TextAnchor.UpperRight;
-                    labelRect = new Rect(xCenter - labelW, y + TickLineH, labelW, TickLabelH);
-                }
-                else
-                {
-                    Text.Anchor = TextAnchor.UpperCenter;
-                    labelRect = new Rect(xCenter - halfLabel, y + TickLineH, labelW, TickLabelH);
-                }
+                Text.Anchor = TextAnchor.UpperCenter;
+                labelRect = new Rect(xCenter - halfLabel, y + TickLineH, labelW, TickLabelH);
                 Widgets.Label(labelRect, label);
             }
 

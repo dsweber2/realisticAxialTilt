@@ -16,12 +16,7 @@ namespace RealisticAxialTilt.Patches
             float skyGlow = __instance.Map.skyManager.CurSkyGlow;
             float cellGlow = __instance.Map.glowGrid.GroundGlowAt(__instance.Position);
             if (cellGlow < skyGlow) return;
-            // Plants that are cold adapted are also darkness adapted.
-            // LeaflessNow covers hard-freeze dormancy; the temperature check covers the
-            // broader window where the plant is too cold to grow but not yet leafless.
-            bool dormant = __instance.LeaflessNow
-                || __instance.AmbientTemperature < __instance.def.plant.minGrowthTemperature;
-            if (!dormant) return;
+            if (__instance.def.plant.dieIfLeafless) return;
             ___unlitTicks = 0;
         }
     }

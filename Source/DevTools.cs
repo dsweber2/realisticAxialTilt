@@ -14,6 +14,11 @@ namespace RealisticAxialTilt
         private static readonly FieldInfo TicksGameField =
             AccessTools.Field(typeof(TickManager), "ticksGameInt");
 
+        private static readonly FieldInfo UnlitTicksField =
+            AccessTools.Field(typeof(Plant), "unlitTicks");
+
+        private const int SunlightDeathThreshold = 450000;
+
         private static float PlayerLongitude =>
             Find.AnyPlayerHomeMap != null
                 ? Find.WorldGrid.LongLatOf(Find.AnyPlayerHomeMap.Tile).x
@@ -132,6 +137,32 @@ namespace RealisticAxialTilt
                 $"  glow={glow:F3}  isDaytime={GenCelestial.IsDaytime(glow)}\n" +
                 $"  shadow=(E={shadow.x:F2}, N={shadow.y:F2})  |shadow|={shadow.magnitude:F2}\n" +
                 $"  moon elevation={moonElDeg:F1}°  azimuth={moonAzStr}  phase={moonPhase:F3} ({phaseLabel})");
+        }
+
+        [DebugAction("Realistic Axial Tilt", "Set plants near sunlight death threshold")]
+        static void SetPlantsNearSunlightDeath()
+        {
+            Map map = Find.CurrentMap ?? Find.AnyPlayerHomeMap;
+            if (map == null) { Log.Warning("[RAT] No map available."); return; }
+
+            int set = 0, skipped = 0;
+            int target = SunlightDeathThreshold + 1;
+            foreach (Thing thing in map.listerThings.ThingsInGroup(ThingRequestGroup.Plant))
+            {
+                if (!(thing is Plant plant) || !plant.def.plant.dieIfNoSunlight || plant.def.plant.diesToLight)
+                    continue;
+                if (!plant.def.plant.dieIfLeafless)
+                    continue;
+                if (plant.GrowthRateFactor_Light > 0.001f)
+                {
+                    skipped++;
+                    continue;
+                }
+                UnlitTicksField.SetValue(plant, target);
+                set++;
+            }
+            Log.Message($"[RAT] Set unlitTicks={target} on {set} dark sunlight-dependent plants. " +
+                        $"Skipped {skipped} that currently have enough light (counter would reset immediately).");
         }
     }
 }

@@ -68,6 +68,11 @@ namespace RealisticAxialTilt.Api
         public static float LunarAzimuthDegrees(float latitudeDeg, float dayOfYear, float dayPercent, float cyclePosition) =>
             SolarGeometry.LunarAzimuthDegrees(latitudeDeg, dayOfYear, dayPercent, cyclePosition);
 
+        // Annual mean temperature correction in degrees Celsius relative to the equator,
+        // driven by this world's axial tilt. Positive near equator, negative toward poles.
+        public static float AnnualTemperatureCorrectionDegrees(float latitudeDeg) =>
+            AxialAnnualTemperature.AnnualTemperatureCorrection(latitudeDeg);
+
         // (moonrise, moonset) as solar dayPercent values [0,1), or null for circumpolar.
         // Cycle position is fixed at the call site — for the current tick use LunarCyclePosition().
         // Values are in solar day-percent space so they can be compared directly with SunriseSunset.
