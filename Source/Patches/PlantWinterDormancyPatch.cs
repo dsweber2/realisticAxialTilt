@@ -11,12 +11,12 @@ namespace RealisticAxialTilt.Patches
         private static void Prefix(Plant __instance, ref int ___unlitTicks)
         {
             if (!__instance.Spawned) return;
-            // Skip if the cell is darker than the current outdoor sky — it's in a genuinely
-            // dark location (cave, sealed room), not just experiencing a dark winter.
-            float skyGlow = __instance.Map.skyManager.CurSkyGlow;
-            float cellGlow = __instance.Map.glowGrid.GroundGlowAt(__instance.Position);
-            if (cellGlow < skyGlow) return;
+            // there was some logic here to kill plants under roofs relying on
+            // comparing light levels, but since they only get there by player
+            // placement, players can deal with the fact that they don't grow
+            // and just sit dormant
             if (__instance.def.plant.dieIfLeafless) return;
+            if (!__instance.LeaflessNow) return;
             ___unlitTicks = 0;
         }
     }
