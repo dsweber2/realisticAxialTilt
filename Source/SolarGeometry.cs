@@ -31,10 +31,19 @@ namespace RealisticAxialTilt
             Generation++;
         }
 
+        private static float cachedDeclinationDay = float.NaN;
+        private static int cachedDeclinationGeneration = -1;
+        private static float cachedDeclinationValue;
+
         internal static float DeclinationDegrees(float dayOfYear)
         {
+            if (dayOfYear == cachedDeclinationDay && Generation == cachedDeclinationGeneration)
+                return cachedDeclinationValue;
             float S = Mathf.Sin(dayOfYear / 60f * Mathf.PI * 2f);
-            return Mathf.Asin(Mathf.Clamp(sinTilt * S, -1f, 1f)) * Mathf.Rad2Deg;
+            cachedDeclinationValue = Mathf.Asin(Mathf.Clamp(sinTilt * S, -1f, 1f)) * Mathf.Rad2Deg;
+            cachedDeclinationDay = dayOfYear;
+            cachedDeclinationGeneration = Generation;
+            return cachedDeclinationValue;
         }
 
         internal static float ElevationDegrees(float latitude, float dayOfYear, float dayPercent)
