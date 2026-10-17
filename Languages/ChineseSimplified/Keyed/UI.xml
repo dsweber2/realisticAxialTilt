@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <AxialTilt>地轴倾角</AxialTilt>
+  <AxialTiltTip>行星自转轴相对于其轨道平面的倾斜程度。增大该值会加剧两极季节性温度的波动幅度，同时也会提高两极的平均温度。类地值为 23.45°。90° 可能会相当具有挑战性！</AxialTiltTip>
+  <AxialTiltTicks>类地:23.45,无:0,高:45,极端:90</AxialTiltTicks>
+  <SeasonalDamping>轴向效应</SeasonalDamping>
+  <SeasonalDampingTip>降低地轴倾角的影响。较低的值会将效果压缩至原版水平（k=0.0），而 k=1.0 为现实世界的值。</SeasonalDampingTip>
+  <TempRangeTableLabel>年平均温度范围（冬季低温/夏季高温）:</TempRangeTableLabel>
+  <RAT_SettingsCategory>真实地轴倾角</RAT_SettingsCategory>
+  <RAT_RealisticPlantRest>真实植物休眠期</RAT_RealisticPlantRest>
+  <RAT_RealisticPlantRestDesc>将植物休眠期从约 11 小时缩短至 4 小时（22:00–02:00），使植物在高纬度地区的延长日照期间也能生长。建议搭配非类地地轴倾角使用。</RAT_RealisticPlantRestDesc>
+  <RAT_MoonOrbitalDays>月球轨道周期：{0} 天</RAT_MoonOrbitalDays>
+  <RAT_MoonOrbitalDaysDesc>月球完成一次公转所需的天数。这决定了其月相周期：从新月（与太阳同向，白天）到满月（与太阳相对，午夜）再返回。默认值为 9 天（每年约 6-7 个周期）。相对于 60 天一年的类地值约为 4.55 天。</RAT_MoonOrbitalDaysDesc>
+  <RAT_MoonInclination>月球轨道倾角：{0}°</RAT_MoonInclination>
+  <RAT_MoonInclinationDesc>月球轨道相对于黄道的倾斜程度。较高的值会使月球偏离太阳路径的南北范围更大，在约 18 年的交点周期内改变其弧线高度。类地值为 5.1°。设为 0 可使月球完全锁定于黄道。</RAT_MoonInclinationDesc>
+  <RAT_SuppressLighting>让其他模组处理光照</RAT_SuppressLighting>
+  <RAT_SuppressLightingDesc>阻止本模组绘制太阳、阴影和天空辉光，将其交由其他光照模组处理。地轴倾角仍会驱动温度、季节和植物生长。兼容的光照模组会自动设置此项；仅当某个模组产生冲突且未自动设置时，才需手动勾选。</RAT_SuppressLightingDesc>
+  <RAT_LightingClaimedBy>光照当前由以下模组处理：{0}</RAT_LightingClaimedBy>
+</LanguageData>
