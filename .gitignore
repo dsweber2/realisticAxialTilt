@@ -1,7 +1,6 @@
 .envrc
 Source/GamePath.props
-Assemblies/*.dll
-Assemblies/*.pdb
+/1.*/Assemblies
 Source/obj/
 Source/bin/
 cache/

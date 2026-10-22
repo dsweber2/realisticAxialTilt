@@ -3,41 +3,48 @@
 
   <PropertyGroup>
     <Version>1.1.0</Version>
-    <TargetFramework>net472</TargetFramework>
     <AssemblyName>RealisticAxialTilt</AssemblyName>
     <LangVersion>9.0</LangVersion>
     <ImplicitUsings>disable</ImplicitUsings>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
-    <OutputPath>../Assemblies</OutputPath>
+    <OutputPath>../$(RimWorldVersion)/Assemblies</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(RimWorldPath)' == ''">
+  <PropertyGroup Condition="'$(RimWorldVersion)' == '1.6'">
+    <TargetFramework>net472</TargetFramework>
+  </PropertyGroup>
+
+  <!-- The 1.6 game DLLs are no longer installed, so compile against reference packages. -->
+  <ItemGroup Condition="'$(RimWorldVersion)' == '1.6'">
+    <PackageReference Include="Krafs.Rimworld.Ref" Version="1.6.*">
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="Lib.Harmony" Version="2.3.6">
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <!-- RimWorld 1.7 runs on .NET 10 (Waylith engine). No reference package exists, so reference the game install. -->
+  <PropertyGroup Condition="'$(RimWorldVersion)' == '1.7'">
+    <TargetFramework>net10.0</TargetFramework>
+    <HarmonyPath>$(SteamWorkshopPath)/2009463077/1.7/Assemblies/0Harmony.dll</HarmonyPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(RimWorldVersion)' == '1.7' And '$(RimWorldPath)' == ''">
     <RimWorldPath>RIMWORLD_PATH_NOT_SET — copy GamePath.props.example to GamePath.props and fill it in</RimWorldPath>
   </PropertyGroup>
 
-  <!-- Harmony ships as a Steam Workshop mod (839005762), not in Managed/ -->
-  <PropertyGroup>
-    <HarmonyPath>$(SteamWorkshopPath)/2009463077/Current/Assemblies/0Harmony.dll</HarmonyPath>
-  </PropertyGroup>
-
-  <ItemGroup>
+  <ItemGroup Condition="'$(RimWorldVersion)' == '1.7'">
     <Reference Include="Assembly-CSharp">
-      <HintPath>$(RimWorldPath)/RimWorldLinux_Data/Managed/Assembly-CSharp.dll</HintPath>
+      <HintPath>$(RimWorldPath)/Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>$(RimWorldPath)/RimWorldLinux_Data/Managed/UnityEngine.CoreModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>$(RimWorldPath)/RimWorldLinux_Data/Managed/UnityEngine.IMGUIModule.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine.TextRenderingModule">
-      <HintPath>$(RimWorldPath)/RimWorldLinux_Data/Managed/UnityEngine.TextRenderingModule.dll</HintPath>
+    <Reference Include="UnityStubs">
+      <HintPath>$(RimWorldPath)/UnityStubs.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="0Harmony">

@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="80mm"
+   height="80mm"
+   viewBox="0 0 80 80"
+   version="1.1"
+   id="svg959"
+   sodipodi:docname="ModIcon.svg"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   inkscape:export-filename="../About/ModIcon.png"
+   inkscape:export-xdpi="88.9"
+   inkscape:export-ydpi="88.9"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview961"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="1.4142136"
+     inkscape:cx="311.12698"
+     inkscape:cy="267.63991"
+     inkscape:window-width="1920"
+     inkscape:window-height="1018"
+     inkscape:window-x="0"
+     inkscape:window-y="28"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs956">
+    <inkscape:path-effect
+       effect="bspline"
+       id="path-effect45140"
+       is_visible="true"
+       lpeversion="1"
+       weight="33.333333"
+       steps="2"
+       helper_size="0"
+       apply_no_weight="true"
+       apply_with_weight="true"
+       only_selected="false" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient172857"
+       id="linearGradient172859"
+       x1="855.2724"
+       y1="338.39191"
+       x2="855.2724"
+       y2="489.98361"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient172857">
+      <stop
+         style="stop-color:#ed6a69;stop-opacity:1;"
+         offset="0"
+         id="stop172853" />
+      <stop
+         style="stop-color:#e94444;stop-opacity:1;"
+         offset="1"
+         id="stop172855" />
+    </linearGradient>
+    <clipPath
+       id="gc">
+      <circle
+         cx="320"
+         cy="195"
+         r="120"
+         id="circle564" />
+    </clipPath>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="matrix(1.073526,0,0,1.073526,-3.9986653,-1.8893972)">
+    <g
+       inkscape:groupmode="layer"
+       id="layer2"
+       inkscape:label="tmp" />
+    <g
+       id="g7881"
+       inkscape:label="book circle"
+       transform="matrix(0.23428388,0,0,0.23428388,-162.91876,3.7495719)"
+       style="display:inline">
+      <g
+         id="g2508"
+         transform="matrix(1.2738811,0,0,1.2738811,313.60104,-567.70375)">
+        <g
+           id="g1279">
+          <g
+             id="g1212"
+             transform="matrix(0.78409201,0,0,0.78409201,-679.63134,520.07573)"
+             style="display:inline">
+            <path
+               style="display:inline;fill:#333333;fill-opacity:1;stroke:none;stroke-width:24.4177;stroke-linecap:square;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers;stop-color:#000000"
+               id="path7858"
+               sodipodi:type="arc"
+               sodipodi:cx="1424.149"
+               sodipodi:cy="55.801167"
+               sodipodi:rx="154.36188"
+               sodipodi:ry="154.36188"
+               sodipodi:start="1.6236397"
+               sodipodi:end="1.6234135"
+               sodipodi:open="true"
+               sodipodi:arc-type="arc"
+               d="M 1415.9958,209.94757 A 154.36188,154.36188 0 0 1 1270.0022,47.656677 154.36188,154.36188 0 0 1 1432.2848,-98.34616 154.36188,154.36188 0 0 1 1578.2968,63.928222 154.36188,154.36188 0 0 1 1416.0307,209.94941"
+               inkscape:label="book inner circle" />
+          </g>
+          <line
+             x1="316.96249"
+             y1="683.71875"
+             x2="556.96252"
+             y2="443.71875"
+             stroke="#ffdd44"
+             stroke-width="2"
+             opacity="0.92"
+             id="line712"
+             style="display:inline;fill:#000000;fill-opacity:1" />
+        </g>
+        <g
+           clip-path="url(#gc)"
+           id="g706"
+           transform="translate(116.9625,368.71875)">
+          <g
+             transform="rotate(45,320,195)"
+             fill="none"
+             id="g704">
+            <!-- lat −60°: cy=299, rx=60, ry=16 -->
+            <ellipse
+               cx="320"
+               cy="299"
+               rx="60"
+               ry="16"
+               stroke="#3a8cc8"
+               stroke-width="1"
+               opacity="0.5"
+               id="ellipse688"
+               style="display:inline" />
+            <!-- lat −30°: cy=255, rx=104, ry=28 -->
+            <ellipse
+               cx="320"
+               cy="255"
+               rx="104"
+               ry="28"
+               stroke="#3a8cc8"
+               stroke-width="1"
+               opacity="0.5"
+               id="ellipse690"
+               style="display:inline" />
+            <!-- equator: cy=195, rx=120, ry=32 — slightly emphasised -->
+            <ellipse
+               cx="320"
+               cy="195"
+               rx="120"
+               ry="32"
+               stroke="#50a4d8"
+               stroke-width="1.5"
+               opacity="0.75"
+               id="ellipse692"
+               style="display:inline" />
+            <!-- lat +30°: cy=135, rx=104, ry=28 -->
+            <ellipse
+               cx="320"
+               cy="135"
+               rx="104"
+               ry="28"
+               stroke="#3a8cc8"
+               stroke-width="1"
+               opacity="0.5"
+               id="ellipse694"
+               style="display:inline" />
+            <!-- lat +60°: cy=91,  rx=60, ry=16 -->
+            <ellipse
+               cx="320"
+               cy="91"
+               rx="60"
+               ry="16"
+               stroke="#3a8cc8"
+               stroke-width="1"
+               opacity="0.5"
+               id="ellipse696"
+               style="display:inline" />
+            <!-- central meridian (lon 0°): vertical line -->
+            <line
+               x1="320"
+               y1="75"
+               x2="320"
+               y2="315"
+               stroke="#3a8cc8"
+               stroke-width="1"
+               opacity="0.55"
+               id="line698"
+               style="display:none" />
+            <!-- lon ±30°: rx=60, ry=120 -->
+            <ellipse
+               cx="320"
+               cy="195"
+               rx="60"
+               ry="120"
+               stroke="#3a8cc8"
+               stroke-width="1"
+               opacity="0.5"
+               id="ellipse700" />
+            <!-- lon ±60°: rx=104, ry=120 -->
+            <ellipse
+               cx="320"
+               cy="195"
+               rx="104"
+               ry="120"
+               stroke="#3a8cc8"
+               stroke-width="1"
+               opacity="0.5"
+               id="ellipse702" />
+          </g>
+        </g>
+        <circle
+           cx="436.96249"
+           cy="563.71875"
+           r="120"
+           fill="url(#atm)"
+           stroke="#4fa8de"
+           stroke-width="1.8"
+           opacity="0.88"
+           id="circle708"
+           style="display:inline;fill:none;fill-opacity:1" />
+      </g>
+    </g>
+  </g>
+</svg>
