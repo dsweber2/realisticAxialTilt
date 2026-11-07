@@ -24,6 +24,8 @@ namespace RealisticAxialTilt
                 ? Find.WorldGrid.LongLatOf(Find.AnyPlayerHomeMap.Tile).x
                 : 0f;
 
+        // Only shift forward. Many caches refresh when ticksGame passes a stored tick,
+        // and they stay stale if time moves backwards.
         private static void ShiftTicks(int delta)
         {
             int current = (int)TicksGameField.GetValue(Find.TickManager);
@@ -42,7 +44,7 @@ namespace RealisticAxialTilt
                     float lon = PlayerLongitude;
                     float currentFrac = GenDate.DayPercent(Find.TickManager.TicksAbs, lon);
                     float desiredFrac = hh / 24f;
-                    ShiftTicks((int)((desiredFrac - currentFrac) * GenDate.TicksPerDay));
+                    ShiftTicks((int)(GenMath.PositiveMod(desiredFrac - currentFrac, 1f) * GenDate.TicksPerDay));
                 }));
             }
             Find.WindowStack.Add(new Dialog_DebugOptionListLister(options, "Hour of day"));
@@ -79,7 +81,7 @@ namespace RealisticAxialTilt
         {
             float lon = PlayerLongitude;
             int currentDay = GenDate.DayOfYear(Find.TickManager.TicksAbs, lon);
-            ShiftTicks((targetDay - currentDay) * GenDate.TicksPerDay);
+            ShiftTicks(GenMath.PositiveMod(targetDay - currentDay, GenDate.DaysPerYear) * GenDate.TicksPerDay);
         }
 
         [DebugAction("Realistic Axial Tilt", "Log sun & glow state")]
@@ -113,7 +115,9 @@ namespace RealisticAxialTilt
                 azStr = $"{az:F1}°";
             }
 
-            float   glow   = GenCelestial.CurCelestialSunGlow(map);
+            // CurCelestialSunGlow can return a cached value from Performance Optimizer.
+            // That cache does not expire when debug actions move time backwards.
+            float   glow   = GenCelestial.CelestialSunGlow(map, GenTicks.TicksAbs);
             Vector2 shadow = SolarGeometry.ComputeShadowVector(lat, dayOfYear, dayPct);
 
             var    srss   = SolarGeometry.ComputeSunriseSunset(lat, dayOfYear);

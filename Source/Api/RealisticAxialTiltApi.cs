@@ -80,8 +80,9 @@ namespace RealisticAxialTilt.Api
             SolarGeometry.ComputeMoonriseMoonset(latitudeDeg, dayOfYear, cyclePosition);
 
         // Lighting handover. A mod that renders its own sun/shadows/glow claims this once and
-        // every lighting patch here stands down; tilt gameplay (temperature, seasonal amplitude,
-        // plant rest/dormancy, world-params UI) is unaffected.
+        // every map sun/shadow patch here stands down; tilt gameplay (temperature, seasonal amplitude,
+        // plant rest/dormancy, world-params UI), sun glow and the world globe sun are unaffected.
+        // Our glow postfix runs first, so a claimant can still replace glow with its own postfix.
         public static bool LightingSuppressed =>
             lightingOwner != null
             || (RealisticAxialTiltMod.Settings?.suppressLighting ?? false);

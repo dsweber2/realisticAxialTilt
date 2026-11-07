@@ -14,6 +14,6 @@
   <RAT_MoonInclination>Moon orbital inclination: {0}°</RAT_MoonInclination>
   <RAT_MoonInclinationDesc>Tilt of the moon's orbit relative to the ecliptic. Higher values let the moon stray further north or south of the sun's path, varying its arc height over an ~18-year nodal cycle. Earth-like is 5.1°. Set to 0 for a moon locked exactly to the ecliptic.</RAT_MoonInclinationDesc>
   <RAT_SuppressLighting>Let another mod handle lighting</RAT_SuppressLighting>
-  <RAT_SuppressLightingDesc>Stops this mod from drawing the sun, shadows and sky glow, leaving them to another lighting mod. Axial tilt still drives temperature, seasons and plant growth. Compatible lighting mods set this automatically; tick it by hand only if one conflicts without doing so.</RAT_SuppressLightingDesc>
+  <RAT_SuppressLightingDesc>Stops this mod from drawing the sun and shadows on the map, leaving them to another lighting mod. Axial tilt still drives temperature, seasons, plant growth, daylight brightness and the sun on the world map. Compatible lighting mods set this automatically; tick it by hand only if one conflicts without doing so.</RAT_SuppressLightingDesc>
   <RAT_LightingClaimedBy>Lighting is currently handled by: {0}</RAT_LightingClaimedBy>
 </LanguageData>

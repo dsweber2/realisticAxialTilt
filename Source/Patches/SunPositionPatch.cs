@@ -22,15 +22,14 @@ namespace RealisticAxialTilt.Patches
         }
     }
 
+    // The world globe sun is not part of the lighting handover. Lighting mods replace
+    // map glow and shadows only, and the globe must show the real tilt.
     [HarmonyPatch(typeof(GenCelestial), "CurSunPositionInWorldSpace")]
     internal static class CurSunPositionInWorldSpacePatch
     {
         [HarmonyPrefix]
         private static bool Prefix(ref Vector3 __result)
         {
-            if (RealisticAxialTiltApi.LightingSuppressed)
-                return true;
-
             int ticks;
             if (Current.ProgramState != ProgramState.Entry)
             {
