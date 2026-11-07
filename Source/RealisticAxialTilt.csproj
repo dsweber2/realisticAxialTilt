@@ -2,7 +2,7 @@
   <Import Project="GamePath.props" Condition="Exists('GamePath.props')" />
 
   <PropertyGroup>
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
     <AssemblyName>RealisticAxialTilt</AssemblyName>
     <LangVersion>9.0</LangVersion>
     <ImplicitUsings>disable</ImplicitUsings>
